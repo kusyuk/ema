@@ -7,6 +7,7 @@ import '../../core/utils/usecase.dart';
 import '../../domain/entities/tts_settings.dart';
 import '../../domain/usecases/tts/load_tts_settings.dart';
 import '../../domain/usecases/tts/save_tts_settings.dart';
+import 'help_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -98,13 +99,6 @@ class _SettingsPageState extends State<SettingsPage> {
           style: TextStyle(fontSize: AppConstants.defaultFontSize),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Reload',
-            onPressed: _loading ? null : _load,
-          ),
-        ],
       ),
       body: SafeArea(
         child: _loading
@@ -243,6 +237,27 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: const Text('Reset'),
                 ),
               ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _Section(
+          title: 'Help & FAQ',
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.help_outline),
+              title: const Text(
+                'Open help',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              subtitle: const Text('How to record, summaries, reminders, privacy'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const HelpPage()),
+                );
+              },
             ),
           ],
         ),

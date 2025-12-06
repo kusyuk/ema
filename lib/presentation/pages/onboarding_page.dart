@@ -24,19 +24,29 @@ class OnboardingPage extends StatelessWidget {
       globalBackgroundColor: AppTheme.backgroundBase,
       pages: [
         _page(
-          title: 'Capture the visit',
-          body: 'Start a recording with one tap. Low file size, clear speech.',
+          title: 'Welcome to EMA',
+          body: 'This app helps you record doctor visits and read simple summaries.',
           icon: Icons.mic,
         ),
         _page(
-          title: 'Understand easily',
-          body: 'Transcribe and summarize into simple terms, then listen with TTS.',
-          icon: Icons.auto_awesome,
+          title: 'Record with consent',
+          body: 'Please ask your doctor before recording. Tap Record to start when allowed.',
+          icon: Icons.verified_user_outlined,
+        ),
+        _page(
+          title: 'Simple summaries',
+          body: 'We transcribe and summarize in plain language. You can also listen with text-to-speech.',
+          icon: Icons.volume_up,
         ),
         _page(
           title: 'Stay organized',
-          body: 'See appointments on the calendar, get reminders, and share summaries.',
+          body: 'View your appointments on the calendar and get reminders before visits.',
           icon: Icons.calendar_today,
+        ),
+        _page(
+          title: 'Privacy',
+          body: 'Audio stays on your device. Groq helps with transcription and summaries.',
+          icon: Icons.lock_outline,
         ),
       ],
       showSkipButton: true,

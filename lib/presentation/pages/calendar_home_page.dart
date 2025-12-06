@@ -164,12 +164,6 @@ class CalendarHomePageState extends State<CalendarHomePage> {
           style: TextStyle(fontSize: AppConstants.defaultFontSize),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadAppointments,
-          ),
-        ],
       ),
       body: SafeArea(
         child: _loading

@@ -226,7 +226,6 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
             tooltip: 'Share',
             onPressed: _appointment == null ? null : _shareAppointment,
           ),
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _load),
         ],
       ),
       body: SafeArea(child: _buildBody()),
