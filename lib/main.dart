@@ -97,11 +97,11 @@ class _MainAppState extends State<MainApp> {
           darkTheme: AppTheme.darkTheme(),
           builder: (context, child) {
             final mediaQuery = MediaQuery.of(context);
-            // Allow user accessibility scaling, but never go below 1.0
-            final clampedScaler = mediaQuery.textScaler.clamp(
-              minScaleFactor: 1.0,
-              maxScaleFactor: 1.6,
-            );
+        // Allow user accessibility scaling, but clamp to a safe linear range to avoid layout issues.
+        final clampedScaler = mediaQuery.textScaler.clamp(
+          minScaleFactor: 1.0,
+          maxScaleFactor: 1.4,
+        );
             return MediaQuery(
               data: mediaQuery.copyWith(textScaler: clampedScaler),
               child: child ?? const SizedBox.shrink(),

@@ -469,7 +469,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           LabeledSlider(
             label: 'Speech Rate',
             value: provider.ttsRate,
-            min: 0.5,
+            min: 0.3,
             max: 1.5,
             onChanged: (v) => provider.setTtsRate(v),
           ),
@@ -499,13 +499,16 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           // Regenerate Summary Button
           SizedBox(
             width: double.infinity,
-            height: AppConstants.minTouchTargetSize,
+            height: 56, // Increased for better text accommodation
             child: OutlinedButton.icon(
               onPressed: () => provider.summarizeTranscription(),
               icon: const Icon(Icons.refresh),
-              label: const Text(
-                'Regenerate Summary',
-                style: TextStyle(fontSize: AppConstants.defaultFontSize),
+              label: const FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  'Regenerate Summary',
+                  style: TextStyle(fontSize: AppConstants.defaultFontSize),
+                ),
               ),
             ),
           ),
@@ -535,12 +538,15 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           // Action Buttons
           SizedBox(
             width: double.infinity,
-            height: AppConstants.minTouchTargetSize,
+            height: 56, // Increased for better text accommodation
             child: ElevatedButton(
               onPressed: () => _handleSave(context, provider),
-              child: const Text(
-                'Save & Continue',
-                style: TextStyle(fontSize: AppConstants.defaultFontSize),
+              child: const FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  'Save & Continue',
+                  style: TextStyle(fontSize: AppConstants.defaultFontSize),
+                ),
               ),
             ),
           ),

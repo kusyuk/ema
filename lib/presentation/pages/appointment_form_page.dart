@@ -60,6 +60,14 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
       initialDate: _selectedDateTime,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
+      builder: (ctx, child) {
+        return MediaQuery(
+          data: MediaQuery.of(ctx).copyWith(
+            textScaler: TextScaler.noScaling,
+          ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
     if (date == null) return;
 
@@ -67,6 +75,14 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
+      builder: (ctx, child) {
+        return MediaQuery(
+          data: MediaQuery.of(ctx).copyWith(
+            textScaler: TextScaler.noScaling,
+          ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
     if (time == null) return;
 
