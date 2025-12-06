@@ -13,6 +13,7 @@ import '../../domain/usecases/tts/stop_speaking.dart';
 import '../../domain/usecases/tts/load_tts_settings.dart';
 import '../../domain/usecases/tts/save_tts_settings.dart';
 import '../pages/appointments_page.dart';
+import '../pages/root_page.dart';
 import '../providers/transcription_provider.dart';
 import '../widgets/labeled_slider.dart';
 
@@ -45,8 +46,10 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
 
   Future<void> _initAudio() async {
     try {
+      await _player.stop();
       final file = FileStorage.getAudioFile(widget.audioFilePath);
       await _player.loadAudio(file.path);
+      await _player.setVolume(1.0);
       setState(() {
         _audioLoading = false;
       });
@@ -56,6 +59,12 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         _audioLoading = false;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _player.stop();
+    super.dispose();
   }
 
   @override
@@ -78,6 +87,13 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             style: TextStyle(fontSize: AppConstants.defaultFontSize),
           ),
           centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const RootPage()),
+              (route) => false,
+            ),
+          ),
         ),
         body: SafeArea(
           child: Consumer<TranscriptionProvider>(
@@ -91,7 +107,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                   _startTranscription(provider);
                 });
               }
-              
+
               return _buildContent(context, provider);
             },
           ),
@@ -160,13 +176,13 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           ),
           if (provider.transcriptionProgress != null) ...[
             const SizedBox(height: 24),
-            LinearProgressIndicator(
-              value: provider.transcriptionProgress,
-            ),
+            LinearProgressIndicator(value: provider.transcriptionProgress),
             const SizedBox(height: 8),
             Text(
               '${(provider.transcriptionProgress! * 100).toInt()}%',
-              style: const TextStyle(fontSize: AppConstants.defaultFontSize - 2),
+              style: const TextStyle(
+                fontSize: AppConstants.defaultFontSize - 2,
+              ),
             ),
           ],
         ],
@@ -206,11 +222,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.error_outline,
-            size: 80,
-            color: Colors.red,
-          ),
+          const Icon(Icons.error_outline, size: 80, color: Colors.red),
           const SizedBox(height: 24),
           const Text(
             'Transcription Failed',
@@ -263,11 +275,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.warning_amber,
-            size: 80,
-            color: Colors.orange,
-          ),
+          const Icon(Icons.warning_amber, size: 80, color: Colors.orange),
           const SizedBox(height: 24),
           const Text(
             'Summary Failed',
@@ -320,6 +328,27 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Transcription Section (Expandable)
+          ExpansionTile(
+            title: const Text(
+              'Full Transcription',
+              style: TextStyle(fontSize: AppConstants.defaultFontSize),
+            ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  provider.transcription!,
+                  style: const TextStyle(
+                    fontSize: AppConstants.defaultFontSize,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+
           // Summary Section
           const Text(
             'Summary',
@@ -356,10 +385,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           ),
           const SizedBox(height: 8),
           if (_audioError != null)
-            Text(
-              _audioError!,
-              style: TextStyle(color: Colors.red[700]),
-            ),
+            Text(_audioError!, style: TextStyle(color: Colors.red[700])),
           if (_audioLoading)
             const Padding(
               padding: EdgeInsets.only(bottom: 8.0),
@@ -391,7 +417,9 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                             }
                           } catch (e) {
                             messenger.showSnackBar(
-                              SnackBar(content: Text('Failed to play audio: $e')),
+                              SnackBar(
+                                content: Text('Failed to play audio: $e'),
+                              ),
                             );
                           }
                         },
@@ -442,18 +470,18 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               const SizedBox(width: 12),
               IconButton(
                 tooltip: 'Stop',
-                onPressed: provider.isSpeaking ? () => provider.stopSpeaking() : null,
+                onPressed: provider.isSpeaking
+                    ? () => provider.stopSpeaking()
+                    : null,
                 icon: const Icon(Icons.stop),
               ),
             ],
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 24),
           DropdownButtonFormField<String>(
             initialValue: provider.ttsLanguage,
-            decoration: const InputDecoration(
-              labelText: 'Language',
-            ),
+            decoration: const InputDecoration(labelText: 'Language'),
             items: const [
               DropdownMenuItem(value: 'en-US', child: Text('English (US)')),
               DropdownMenuItem(value: 'en-GB', child: Text('English (UK)')),
@@ -493,9 +521,9 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               ),
             ),
           ],
-          
+
           const SizedBox(height: 32),
-          
+
           // Regenerate Summary Button
           SizedBox(
             width: double.infinity,
@@ -513,28 +541,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             ),
           ),
           const SizedBox(height: 32),
-          
-          // Transcription Section (Expandable)
-          ExpansionTile(
-            title: const Text(
-              'Full Transcription',
-              style: TextStyle(fontSize: AppConstants.defaultFontSize),
-            ),
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  provider.transcription!,
-                  style: const TextStyle(
-                    fontSize: AppConstants.defaultFontSize,
-                    height: 1.5,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 32),
-          
+
           // Action Buttons
           SizedBox(
             width: double.infinity,
@@ -579,18 +586,19 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     );
   }
 
-  Future<void> _handleSave(BuildContext context, TranscriptionProvider provider) async {
+  Future<void> _handleSave(
+    BuildContext context,
+    TranscriptionProvider provider,
+  ) async {
     final result = await provider.saveToRecording();
-    
+
     if (!mounted) return;
-    
+
     result.fold(
       onSuccess: (_) {
         if (mounted) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (_) => const AppointmentsPage(),
-            ),
+            MaterialPageRoute(builder: (_) => const AppointmentsPage()),
           );
         }
       },
@@ -607,4 +615,3 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     );
   }
 }
-
