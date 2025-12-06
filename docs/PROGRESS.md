@@ -8,8 +8,8 @@
 ## Overall Progress
 
 **Status**: Development In Progress  
-**Current Phase**: Phase 8 - Appointment Management (In Progress)  
-**Completion**: ~75% of MVP features  
+**Current Phase**: Phase 11 - UI/UX & Accessibility (In Progress)  
+**Completion**: ~78% of MVP features  
 **App Status**: ✅ Running Successfully (Initialization issues resolved)
 
 ---
@@ -94,9 +94,9 @@
 
 ## Current Phase
 
-### ✅ Phase 7: Text-to-Speech Feature (MOSTLY COMPLETE)
+### ✅ Phase 7: Text-to-Speech Feature (COMPLETE)
 
-**Status**: ~90% Complete
+**Status**: 100% Complete
 
 #### Completed:
 - ✅ Created TTS service (`TtsService`) using flutter_tts
@@ -107,9 +107,9 @@
 - ✅ Inline playback + TTS controls on Appointment Detail (no dialog; better UX)
 - ✅ Lints cleaned; dependency order fixed
 
-#### Remaining polish:
-- [ ] Refine TTS UX defaults
-- [ ] (Optional) Expand language list
+#### Notes:
+- Default rate tuned (0.7), pause removed due to plugin limits
+- Settings persisted via Hive
 
 ---
 
@@ -209,27 +209,22 @@
 
 ## Next Steps
 
-### Finish Phase 7 (TTS polish)
-1. Refine TTS UX defaults
-2. (Optional) Expand language list
+### Phase 11: UI/UX & Accessibility (in progress)
+1. Screen-reader semantics: extend labels to recording/transcription/play controls across pages (detail done for share/play/stop; Record Session button labeled)  
+2. Touch targets: enforce 44x44 min for primary actions (record, play/stop, share, save)  
+3. Contrast & text scaling: validate tokens against large text / high-contrast modes  
+4. Onboarding/help polish using `introduction_screen` (optional)  
 
-### Phase 8: Appointment Management (in progress)
-1. Appointment CRUD with Hive (create/edit/delete implemented; cascades recordings/audio; linkage consistent) ✅
-2. Appointment list/detail UI with associated recordings/transcriptions (inline playback+TTS; edit/delete) ✅
-3. Calendar-first home with bottom navigation (Home/Calendar, History, Settings) and FAB add-appointment; keep current palette ✅
-4. Calendar integration: highlighted dates, selected-day filter, next-day card, quick “Start Recording” near appointment window ✅
-5. History tab with filters/search ✅
-6. Settings stub ✅
-7. Prepare for sharing/notifications (Phase 9/10) — pending
-8. Reminders Phase (core): reminder toggle + lead time, scheduling via local notifications, cancel on delete, text updates based on reminder window ✅
-9. Sharing MVP: share appointment + best available summary/transcription ✅
+### Phase 9/10 polish (deferred until after A11Y)
+- Share modal options (summary-only vs. summary+transcript, optional audio)
+- Notification UX polish (permission prompts, reschedule on app launch)
 
 ---
 
 ## Known Issues
 
 ### Minor:
-- None currently
+- Accessibility sweep ongoing: touch targets/semantics not yet applied on all screens
 
 ### Resolved:
 - ✅ `.env` file not found at runtime (fixed by adding to assets)

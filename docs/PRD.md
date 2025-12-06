@@ -197,6 +197,7 @@ EMA is a Flutter mobile application designed to assist elderly patients during m
 - **FR-12.3**: Large touch targets (minimum 44x44 points)
 - **FR-12.4**: Clear visual feedback for all actions
 - **FR-12.5**: Support for system accessibility settings
+- **FR-12.6**: Semantic labels on interactive controls (record, play/stop, share, save)
 - **Priority**: P0 (Critical)
 
 #### FR-13: Navigation
@@ -264,18 +265,19 @@ EMA is a Flutter mobile application designed to assist elderly patients during m
 - **File System**: Local storage for audio files
 
 #### External Services
-- **Groq API**: LLM for summarization
-- **ElevenLabs API**: Speech-to-text transcription
+- **Groq API**: LLM for summarization and speech-to-text transcription
 
 #### Key Packages
 - **flutter_tts**: Text-to-speech functionality
-- **elevenlabs_flutter_updated**: Speech-to-text integration (updated package)
+- **record** / **just_audio**: Audio recording and playback
 - **permission_handler**: Audio recording permissions
 - **path_provider**: File system access
 - **intl**: Date/time formatting
 - **share_plus**: Sharing functionality
 - **flutter_local_notifications**: Appointment reminders
-- **table_calendar**: Calendar view (optional)
+- **table_calendar**: Calendar view
+- **stylish_bottom_bar**: Bottom navigation
+- **introduction_screen**: Onboarding/help
 
 ### 5.3 Data Models
 
@@ -383,9 +385,8 @@ EMA is a Flutter mobile application designed to assist elderly patients during m
 
 ### 9.2 Dependencies
 - Groq API availability and pricing
-- ElevenLabs API availability and pricing
 - Flutter framework updates
-- Platform permissions (microphone, storage)
+- Platform permissions (microphone, storage, notifications)
 
 ---
 

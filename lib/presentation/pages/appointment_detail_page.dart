@@ -372,29 +372,37 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
             const SizedBox(height: 6),
             Row(
               children: [
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    try {
-                      final file = FileStorage.getAudioFile(rec.audioFilePath);
-                      await _player.loadAudio(file.path);
-                      await _player.play();
-                    } catch (e) {
-                      if (!mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Play failed: $e')),
-                      );
-                    }
-                  },
-                  icon: const Icon(Icons.play_arrow),
-                  label: const Text('Play'),
+                Semantics(
+                  label: 'Play recording',
+                  button: true,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      try {
+                        final file = FileStorage.getAudioFile(rec.audioFilePath);
+                        await _player.loadAudio(file.path);
+                        await _player.play();
+                      } catch (e) {
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Play failed: $e')),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.play_arrow),
+                    label: const Text('Play'),
+                  ),
                 ),
                 const SizedBox(width: 8),
-                IconButton(
-                  tooltip: 'Stop',
-                  onPressed: () async {
-                    await _player.stop();
-                  },
-                  icon: const Icon(Icons.stop),
+                Semantics(
+                  label: 'Stop playback',
+                  button: true,
+                  child: IconButton(
+                    tooltip: 'Stop',
+                    onPressed: () async {
+                      await _player.stop();
+                    },
+                    icon: const Icon(Icons.stop),
+                  ),
                 ),
               ],
             ),
@@ -406,45 +414,53 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
             const SizedBox(height: 6),
             Row(
               children: [
-                ElevatedButton.icon(
-                  onPressed: hasSummary
-                      ? () async {
-                          try {
+                Semantics(
+                  label: 'Play summary with text to speech',
+                  button: true,
+                  child: ElevatedButton.icon(
+                    onPressed: hasSummary
+                        ? () async {
+                            try {
+                              setState(() {
+                                _isSpeaking = true;
+                                _ttsError = null;
+                              });
+                              await _tts.speak(
+                                text: rec.summarizedTranscription!,
+                                rate: 0.7,
+                                pitch: 1.0,
+                              );
+                              setState(() {
+                                _isSpeaking = false;
+                              });
+                            } catch (e) {
+                              setState(() {
+                                _ttsError = 'TTS failed';
+                                _isSpeaking = false;
+                              });
+                            }
+                          }
+                        : null,
+                    icon: const Icon(Icons.volume_up),
+                    label: const Text('Play Summary'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Semantics(
+                  label: 'Stop text to speech',
+                  button: true,
+                  child: IconButton(
+                    tooltip: 'Stop TTS',
+                    onPressed: _isSpeaking
+                        ? () async {
+                            await _tts.stop();
                             setState(() {
-                              _isSpeaking = true;
-                              _ttsError = null;
-                            });
-                            await _tts.speak(
-                              text: rec.summarizedTranscription!,
-                              rate: 0.7,
-                              pitch: 1.0,
-                            );
-                            setState(() {
-                              _isSpeaking = false;
-                            });
-                          } catch (e) {
-                            setState(() {
-                              _ttsError = 'TTS failed';
                               _isSpeaking = false;
                             });
                           }
-                        }
-                      : null,
-                  icon: const Icon(Icons.volume_up),
-                  label: const Text('Play Summary'),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  tooltip: 'Stop TTS',
-                  onPressed: _isSpeaking
-                      ? () async {
-                          await _tts.stop();
-                          setState(() {
-                            _isSpeaking = false;
-                          });
-                        }
-                      : null,
-                  icon: const Icon(Icons.stop),
+                        : null,
+                    icon: const Icon(Icons.stop),
+                  ),
                 ),
               ],
             ),

@@ -3,7 +3,7 @@
 
 ### Project Status: Development In Progress
 ### Last Updated: 2025
-### Current Phase: Phase 8 - Appointment Management (calendar-first redesign approved; keep current palette)
+### Current Phase: Phase 11 - UI/UX & Accessibility (calendar-first redesign delivered; accessibility sweep in progress)
 
 ---
 
@@ -155,24 +155,24 @@
   - `UserPreferences` entity (pending - for future settings)
 
 #### 4.2 Use Cases
-- [ ] **USE-001**: Recording use cases
+- [x] **USE-001**: Recording use cases
   - `StartRecordingUseCase`
   - `StopRecordingUseCase`
   - `PauseRecordingUseCase`
   - `SaveRecordingUseCase`
   - `DeleteRecordingUseCase`
 
-- [ ] **USE-002**: Transcription use cases
+- [x] **USE-002**: Transcription use cases
   - `TranscribeAudioUseCase`
   - `GetTranscriptionUseCase`
   - `RetryTranscriptionUseCase`
 
-- [ ] **USE-003**: Summarization use cases
+- [x] **USE-003**: Summarization use cases
   - `SummarizeTranscriptionUseCase`
   - `GetSummaryUseCase`
   - `RegenerateSummaryUseCase`
 
-- [ ] **USE-004**: Appointment use cases
+- [x] **USE-004**: Appointment use cases
   - `CreateAppointmentUseCase`
   - `GetAppointmentsUseCase`
   - `GetAppointmentByIdUseCase`
@@ -180,14 +180,14 @@
   - `DeleteAppointmentUseCase`
   - `GetUpcomingAppointmentsUseCase`
 
-- [ ] **USE-005**: Text-to-speech use cases
+- [x] **USE-005**: Text-to-speech use cases
   - `SpeakTextUseCase`
   - `StopSpeakingUseCase`
-  - `PauseSpeakingUseCase`
+  - `PauseSpeakingUseCase` (removed from DI/UI; plugin lacks resume)
   - `SetSpeakingLanguageUseCase`
   - `SetSpeakingSpeedUseCase`
 
-- [ ] **USE-006**: Sharing use cases
+- [x] **USE-006**: Sharing use cases
   - `ShareAppointmentUseCase`
   - `ExportAppointmentAsPdfUseCase` (future)
 
@@ -297,7 +297,7 @@
   - Pitch selector
   - (Optional) Text highlighting / progress indicator
 
-#### 7.2 TTS Polish (Remaining)
+#### 7.2 TTS Polish
 - [x] **TTS-004**: Persist TTS settings (language/rate/pitch) ✅
 - [ ] **TTS-005**: Expand language list (as needed)
 - [ ] **TTS-006**: Refine UX defaults and accessibility cues
@@ -362,11 +362,12 @@
   - Keep current EMA palette; mirror layout from provided mock (round cards, high contrast) ✅
   - Recording-availability text reflects reminder window; hidden for past dates ✅
 
-- [ ] **UI-APT-004**: Calendar view
+- [x] **UI-APT-004**: Calendar view
   - Month/year navigation
   - Highlight appointment dates
   - Tap date to view appointments
   - Large, accessible calendar UI
+  - “Record Session” button wired; recording-availability text follows reminder window; hidden for past dates
 
 ---
 
@@ -441,9 +442,10 @@
   - Adequate spacing between buttons
   - Test on various screen sizes
 
-- [ ] **A11Y-004**: Screen reader support
-  - Semantic labels for all UI elements
-  - Screen reader testing
+- [ ] **A11Y-004**: Screen reader support (in progress)
+  - Semantic labels for all UI elements  
+  - Applied on: Calendar “Record Session” button; Appointment Detail share/play/stop (recording & TTS)  
+  - Pending: Recording page controls, Transcription page controls, History/Home lists  
   - Proper focus management
 
 - [ ] **A11Y-005**: Visual feedback
@@ -453,28 +455,20 @@
   - Haptic feedback (where appropriate)
 
 #### 11.2 Navigation & Layout
-- [ ] **UI-NAV-001**: Main navigation
-  - Bottom navigation bar (simple, 3-4 items)
-  - Home screen
-  - Appointments screen
-  - Settings screen
+- [x] **UI-NAV-001**: Main navigation
+  - Bottom navigation bar (3 items) with StylishBottomBar
+  - Home/Calendar, History, Settings screens
   - Clear navigation hierarchy
 
-- [ ] **UI-NAV-002**: Home screen
-  - Large "Start Recording" button
-  - Quick access to recent appointments
-  - Upcoming appointments widget
-  - Clear, uncluttered design
+- [x] **UI-NAV-002**: Home screen
+  - Large "Record Session" entry point (contextual to selected appointment)
+  - Quick access to selected/upcoming appointments card
+  - Calendar-first design, rounded cards, design tokens applied
 
-- [ ] **UI-NAV-003**: Settings screen
-  - Language selection
-  - Text size adjustment
-  - Notification preferences
-  - Storage management
-  - About/Help section
-  - Privacy settings
+- [x] **UI-NAV-003**: Settings screen
+  - TTS defaults (language/rate/pitch) adjustable and persisted
+  - Accessibility and privacy sections (informational; more actions pending)
 
-#### 11.3 Onboarding & Help
 - [ ] **UI-ONB-001**: First-time user onboarding
   - Welcome screen
   - Feature introduction
