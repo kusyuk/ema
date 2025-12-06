@@ -6,6 +6,7 @@ import '../../core/services/tts_service.dart';
 import '../../core/utils/file_storage.dart';
 import '../../core/utils/result.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../core/services/notification_service.dart';
 import '../../domain/entities/appointment.dart';
 import '../../domain/entities/recording.dart';
 import '../../domain/usecases/appointments/get_appointment_by_id.dart';
@@ -179,6 +180,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                       if (!mounted) return;
                       final delete = di.sl<DeleteAppointment>();
                       final deleteRecording = di.sl<DeleteRecording>();
+                      final notificationService = di.sl<NotificationService>();
+                      await notificationService.cancelAppointmentReminder(_appointment!.id);
                       final result = await delete(DeleteAppointmentParams(_appointment!.id));
                       if (!mounted) return;
                       result.fold(

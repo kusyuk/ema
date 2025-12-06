@@ -1,0 +1,128 @@
+{
+  "design_system": {
+    "overall_style": {
+      "vibe": "Modern, minimal, soft UI with rounded shapes",
+      "theme": "Dual-tone dark header with light content area",
+      "tone": "Calm, friendly, semi-professional",
+      "padding": "Generous spacing with airy layout"
+    },
+
+    "color_palette": {
+      "primary_dark": "Deep purple / plum tone",
+      "primary_light": "Soft white / off-white",
+      "accent": "Warm orange / amber",
+      "background": "Very light grey with subtle gradients",
+      "icon_tint": "Soft muted grey"
+    },
+
+    "typography": {
+      "title_style": {
+        "weight": "Semi-bold",
+        "size": "Medium–large",
+        "color": "White or dark depending on background"
+      },
+      "subtitle_style": {
+        "weight": "Regular",
+        "size": "Medium",
+        "color": "Soft grey or muted dark"
+      },
+      "body_style": {
+        "weight": "Light–regular",
+        "size": "Small–medium",
+        "color": "Grey or dark tone"
+      }
+    },
+
+    "layout_structure": {
+      "header": {
+        "style": "Tall rounded top section",
+        "background": "Dark theme block",
+        "elements": [
+          "User avatar in the top-right corner",
+          "Large page title centered or left-aligned",
+          "Minimal or hidden app bar borders"
+        ]
+      },
+
+      "calendar_section": {
+        "style": "Embedded monthly calendar",
+        "highlight": "Circular accent highlight for selected date",
+        "alignment": "Evenly spaced grid"
+      },
+
+      "content_cards": {
+        "style": "Floating card with fully rounded top corners",
+        "shadow": "Very soft drop shadow",
+        "background": "White or very light grey",
+        "touch_target": "Large and comfortable"
+      },
+
+      "form_screen": {
+        "structure": "Top dark header + white form container",
+        "fields": "Rounded text fields with subtle borders",
+        "grouping": "Clear separation between title/date/description fields"
+      },
+
+      "bottom_nav": {
+        "style": "Minimal bottom bar with spaced icons",
+        "shape": "Flat or slightly elevated",
+        "accent_button": "Floating circle button with warm accent color"
+      }
+    },
+
+    "component_style": {
+      "buttons": {
+        "shape": "Pill or full-rounded",
+        "size": "Large main action buttons",
+        "color": "Warm accent tone",
+        "text_style": "White, semi-bold"
+      },
+
+      "inputs": {
+        "shape": "Soft rounded rectangle",
+        "border": "Thin, subtle border",
+        "background": "White/light background",
+        "placeholder_style": "Low-opacity grey text"
+      },
+
+      "avatars": {
+        "shape": "Circle",
+        "border": "Possible soft shadow or thin outline",
+        "placement": "Top right of header"
+      },
+
+      "icons": {
+        "size": "Medium-small",
+        "style": "Line icons or minimalist filled icons",
+        "color": "Muted grey or accent when active"
+      }
+    },
+
+    "animation_and_interactions": {
+      "transitions": "Smooth fade and slide transitions",
+      "button_feedback": "Soft scaling or color fade",
+      "list_interactions": "Subtle shadow elevation on tap"
+    },
+
+    "spatial_system": {
+      "corner_radius": "Large (28–40px approximate)",
+      "gaps": {
+        "small": 8,
+        "medium": 16,
+        "large": 24,
+        "extra_large": 32
+      },
+      "card_inset": "16–20",
+      "screen_padding": "24"
+    },
+
+    "design_principles": [
+      "Contrast dark header with light content areas",
+      "Large rounded shapes to create a friendly aesthetic",
+      "Consistent warm accent color for CTAs",
+      "Use floating buttons for primary actions",
+      "Soft shadows and gradients for depth",
+      "Simplify UI with minimal clutter"
+    ]
+  }
+}

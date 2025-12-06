@@ -33,5 +33,15 @@ class AppConstants {
   static const double maxFontSize = 24.0;
   static const double defaultFontSize = 18.0;
   static const double minTouchTargetSize = 44.0;
+
+  // Reminders
+  static const int defaultReminderMinutes = 60; // 1 hour before
+  static const List<int> reminderOptionsMinutes = [
+    10,
+    30,
+    60,
+    120,
+    1440, // 1 day
+  ];
 }
 

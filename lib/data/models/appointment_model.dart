@@ -1,4 +1,5 @@
 import '../../domain/entities/appointment.dart';
+import '../../core/constants/app_constants.dart';
 import '../utils/typedefs.dart';
 
 /// Appointment data model
@@ -14,6 +15,8 @@ class AppointmentModel extends Appointment {
     super.recordingIds,
     required super.createdAt,
     required super.updatedAt,
+    super.reminderEnabled,
+    super.reminderMinutes,
   });
 
   /// Create from JSON
@@ -32,6 +35,8 @@ class AppointmentModel extends Appointment {
           [],
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
+      reminderEnabled: json['reminderEnabled'] as bool? ?? false,
+      reminderMinutes: json['reminderMinutes'] as int? ?? AppConstants.defaultReminderMinutes,
     );
   }
 
@@ -48,6 +53,8 @@ class AppointmentModel extends Appointment {
       'recordingIds': recordingIds,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
+      'reminderEnabled': reminderEnabled,
+      'reminderMinutes': reminderMinutes,
     };
   }
 
@@ -64,6 +71,8 @@ class AppointmentModel extends Appointment {
       recordingIds: appointment.recordingIds,
       createdAt: appointment.createdAt,
       updatedAt: appointment.updatedAt,
+      reminderEnabled: appointment.reminderEnabled,
+      reminderMinutes: appointment.reminderMinutes,
     );
   }
 }

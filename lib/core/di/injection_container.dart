@@ -10,6 +10,7 @@ import '../services/audio_recorder_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/tts_service.dart';
 import '../services/tts_settings_service.dart';
+import '../services/notification_service.dart';
 import '../../data/datasources/appointment_local_data_source.dart';
 import '../../data/datasources/recording_local_data_source.dart';
 import '../../data/datasources/groq_remote_data_source.dart';
@@ -68,6 +69,13 @@ Future<void> init() async {
     Logger.info('Initializing file storage...');
     await FileStorage.initialize();
     Logger.info('File storage initialized');
+
+    // Initialize notifications
+    Logger.info('Initializing notifications...');
+    final notificationService = NotificationService();
+    await notificationService.initialize();
+    sl.registerLazySingleton<NotificationService>(() => notificationService);
+    Logger.info('Notifications initialized');
   
   // Register core services
   
@@ -103,6 +111,7 @@ Future<void> init() async {
   sl.registerLazySingleton<TtsSettingsService>(
     () => TtsSettingsService(sl<Box<dynamic>>()),
   );
+
   
   // Register Hive box
   final box = await Hive.openBox(AppConstants.hiveBoxName);

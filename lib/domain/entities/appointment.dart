@@ -12,6 +12,8 @@ class Appointment extends Equatable {
   final List<String> recordingIds;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final bool reminderEnabled;
+  final int reminderMinutes;
 
   const Appointment({
     required this.id,
@@ -24,6 +26,8 @@ class Appointment extends Equatable {
     this.recordingIds = const [],
     required this.createdAt,
     required this.updatedAt,
+    this.reminderEnabled = false,
+    this.reminderMinutes = 60,
   });
 
   @override
@@ -38,6 +42,8 @@ class Appointment extends Equatable {
         recordingIds,
         createdAt,
         updatedAt,
+        reminderEnabled,
+        reminderMinutes,
       ];
 
   /// Create a copy with updated fields
@@ -52,6 +58,8 @@ class Appointment extends Equatable {
     List<String>? recordingIds,
     DateTime? createdAt,
     DateTime? updatedAt,
+    bool? reminderEnabled,
+    int? reminderMinutes,
   }) {
     return Appointment(
       id: id ?? this.id,
@@ -64,6 +72,8 @@ class Appointment extends Equatable {
       recordingIds: recordingIds ?? this.recordingIds,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      reminderEnabled: reminderEnabled ?? this.reminderEnabled,
+      reminderMinutes: reminderMinutes ?? this.reminderMinutes,
     );
   }
 }

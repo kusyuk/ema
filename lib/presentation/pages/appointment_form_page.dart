@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/di/injection_container.dart' as di;
 import '../../core/utils/result.dart';
+import '../../core/services/notification_service.dart';
 import '../../domain/entities/appointment.dart';
 import '../../domain/usecases/appointments/create_appointment.dart';
 import '../../domain/usecases/appointments/update_appointment.dart';
@@ -24,6 +25,8 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
   late final TextEditingController _remarksCtrl;
   late final TextEditingController _locationCtrl;
   bool _submitting = false;
+  bool _reminderEnabled = true;
+  int _reminderMinutes = AppConstants.defaultReminderMinutes;
 
   bool get _isEdit => widget.existing != null;
 
@@ -37,6 +40,8 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
     _specialityCtrl = TextEditingController(text: appt?.speciality ?? '');
     _remarksCtrl = TextEditingController(text: appt?.remarks ?? '');
     _locationCtrl = TextEditingController(text: appt?.location ?? '');
+    _reminderEnabled = appt?.reminderEnabled ?? true;
+    _reminderMinutes = appt?.reminderMinutes ?? AppConstants.defaultReminderMinutes;
   }
 
   @override
@@ -80,6 +85,7 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final navigator = Navigator.of(context);
     setState(() {
       _submitting = true;
     });
@@ -99,12 +105,20 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
         speciality: speciality,
         remarks: remarks,
         location: location,
+        reminderEnabled: _reminderEnabled,
+        reminderMinutes: _reminderMinutes,
       );
       final result = await update(UpdateAppointmentParams(updated));
       if (!mounted) return;
       result.fold(
-        onSuccess: (_) {
-          Navigator.of(context).pop(true);
+        onSuccess: (_) async {
+          final notificationService = di.sl<NotificationService>();
+          await notificationService.requestPermission();
+          await notificationService.cancelAppointmentReminder(updated.id);
+          if (updated.reminderEnabled) {
+            await notificationService.scheduleAppointmentReminder(updated);
+          }
+          navigator.pop(true);
         },
         onError: (failure) {
           setState(() {
@@ -125,12 +139,19 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
           speciality: speciality,
           remarks: remarks,
           location: location,
+          reminderEnabled: _reminderEnabled,
+          reminderMinutes: _reminderMinutes,
         ),
       );
       if (!mounted) return;
       result.fold(
-        onSuccess: (_) {
-          Navigator.of(context).pop(true);
+        onSuccess: (appt) async {
+          final notificationService = di.sl<NotificationService>();
+          await notificationService.requestPermission();
+          if (appt.reminderEnabled) {
+            await notificationService.scheduleAppointmentReminder(appt);
+          }
+          navigator.pop(true);
         },
         onError: (failure) {
           setState(() {
@@ -165,6 +186,43 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
                     fontSize: AppConstants.defaultFontSize + 4,
                     fontWeight: FontWeight.bold,
                   ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('Reminder'),
+                        subtitle: const Text('Notify before appointment'),
+                        value: _reminderEnabled,
+                        onChanged: (v) => setState(() => _reminderEnabled = v),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: DropdownButtonFormField<int>(
+                        initialValue: _reminderMinutes,
+                        decoration: const InputDecoration(
+                          labelText: 'Lead time',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: AppConstants.reminderOptionsMinutes
+                            .map(
+                              (m) => DropdownMenuItem(
+                                value: m,
+                                child: Text(_formatLead(m)),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: _reminderEnabled
+                            ? (v) {
+                                if (v != null) setState(() => _reminderMinutes = v);
+                              }
+                            : null,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -271,6 +329,12 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
     final m = dt.minute.toString().padLeft(2, '0');
     final period = dt.hour >= 12 ? 'PM' : 'AM';
     return '${dt.day}/${dt.month}/${dt.year} • $h:$m $period';
+  }
+
+  String _formatLead(int minutes) {
+    if (minutes >= 1440) return '${(minutes / 1440).round()} day before';
+    if (minutes >= 60) return '${(minutes / 60).round()} hour(s) before';
+    return '$minutes min before';
   }
 }
 

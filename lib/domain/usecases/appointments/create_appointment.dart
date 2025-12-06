@@ -1,3 +1,4 @@
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/result.dart';
 import '../../../../core/utils/usecase.dart';
 import '../../entities/appointment.dart';
@@ -11,6 +12,8 @@ class CreateAppointmentParams {
   final String? speciality;
   final String? remarks;
   final String? location;
+   final bool reminderEnabled;
+   final int reminderMinutes;
 
   const CreateAppointmentParams({
     required this.dateTime,
@@ -19,6 +22,8 @@ class CreateAppointmentParams {
     this.speciality,
     this.remarks,
     this.location,
+    this.reminderEnabled = false,
+    this.reminderMinutes = AppConstants.defaultReminderMinutes,
   });
 }
 
@@ -42,6 +47,8 @@ class CreateAppointment implements UseCase<Appointment, CreateAppointmentParams>
       recordingIds: const [],
       createdAt: now,
       updatedAt: now,
+      reminderEnabled: params.reminderEnabled,
+      reminderMinutes: params.reminderMinutes,
     );
 
     return await _repository.createAppointment(appointment);

@@ -51,7 +51,11 @@ class CalendarHomePageState extends State<CalendarHomePage> {
       onSuccess: (data) {
         final map = <DateTime, List<Appointment>>{};
         for (final appt in data) {
-          final key = DateTime(appt.dateTime.year, appt.dateTime.month, appt.dateTime.day);
+          final key = DateTime(
+            appt.dateTime.year,
+            appt.dateTime.month,
+            appt.dateTime.day,
+          );
           map.putIfAbsent(key, () => []).add(appt);
         }
         setState(() {
@@ -70,9 +74,7 @@ class CalendarHomePageState extends State<CalendarHomePage> {
 
   Future<void> createAppointment() async {
     final created = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(
-        builder: (_) => const AppointmentFormPage(),
-      ),
+      MaterialPageRoute(builder: (_) => const AppointmentFormPage()),
     );
     if (created == true && mounted) {
       await _loadAppointments();
@@ -89,6 +91,53 @@ class CalendarHomePageState extends State<CalendarHomePage> {
     final start = appt.dateTime.subtract(_recordingWindow);
     final end = appt.dateTime.add(_recordingWindow);
     return now.isAfter(start) && now.isBefore(end);
+  }
+
+  bool _isPastSelectedDay() {
+    final today = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
+    return _selectedDay.isBefore(today);
+  }
+
+  String? _reminderLeadText(Appointment? appt) {
+    if (appt == null) return null;
+    final minutes = appt.reminderMinutes;
+    if (minutes >= 1440) {
+      return 'Recording available within ${minutes ~/ 1440} day(s) of an appointment.';
+    }
+    if (minutes >= 60) {
+      return 'Recording available within ${minutes ~/ 60} hour(s) of an appointment.';
+    }
+    if (minutes > 0) {
+      return 'Recording available within $minutes minutes of an appointment.';
+    }
+    return 'Recording available before appointment.';
+  }
+
+  String _reminderLeadTextForSelection(List<Appointment> appts) {
+    if (appts.isEmpty) {
+      return 'Recording available before appointment.';
+    }
+    // Use the minimum reminder among the selected day appointments
+    final minutes = appts
+        .map((a) => a.reminderMinutes)
+        .reduce((a, b) => a < b ? a : b);
+    return _reminderLeadText(
+          Appointment(
+            id: '',
+            dateTime: DateTime.now(),
+            hospitalName: '',
+            doctorName: '',
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            reminderEnabled: true,
+            reminderMinutes: minutes,
+          ),
+        ) ??
+        'Recording available before appointment.';
   }
 
   @override
@@ -111,8 +160,8 @@ class CalendarHomePageState extends State<CalendarHomePage> {
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? _buildError()
-                : _buildContent(),
+            ? _buildError()
+            : _buildContent(),
       ),
     );
   }
@@ -124,10 +173,7 @@ class CalendarHomePageState extends State<CalendarHomePage> {
         children: [
           const Icon(Icons.error_outline, size: 64, color: Colors.red),
           const SizedBox(height: 12),
-          Text(
-            _error ?? 'Error',
-            textAlign: TextAlign.center,
-          ),
+          Text(_error ?? 'Error', textAlign: TextAlign.center),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _loadAppointments,
@@ -141,8 +187,18 @@ class CalendarHomePageState extends State<CalendarHomePage> {
   Widget _buildContent() {
     final selectedEvents = _eventsForDay(_selectedDay);
 
-    final startable = selectedEvents.where(_isWithinRecordingWindow).toList();
-    final Appointment? startableAppt = startable.isNotEmpty ? startable.first : null;
+    final today = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
+    final isPast = _selectedDay.isBefore(today);
+    final startable = isPast
+        ? <Appointment>[]
+        : selectedEvents.where(_isWithinRecordingWindow).toList();
+    final Appointment? startableAppt = startable.isNotEmpty
+        ? startable.first
+        : null;
 
     return RefreshIndicator(
       onRefresh: _loadAppointments,
@@ -153,13 +209,10 @@ class CalendarHomePageState extends State<CalendarHomePage> {
             firstDay: DateTime(2020),
             lastDay: DateTime(2030),
             focusedDay: _focusedDay,
-            selectedDayPredicate: (day) =>
-                isSameDay(day, _selectedDay),
+            selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
             eventLoader: _eventsForDay,
             calendarFormat: CalendarFormat.month,
-            availableCalendarFormats: const {
-              CalendarFormat.month: 'Month',
-            },
+            availableCalendarFormats: const {CalendarFormat.month: 'Month'},
             sixWeekMonthsEnforced: true,
             rowHeight: 42,
             daysOfWeekHeight: 20,
@@ -191,13 +244,18 @@ class CalendarHomePageState extends State<CalendarHomePage> {
     );
   }
 
-  Widget _buildSelectedDayCard(List<Appointment> appointments, Appointment? startableAppt) {
+  Widget _buildSelectedDayCard(
+    List<Appointment> appointments,
+    Appointment? startableAppt,
+  ) {
     final isToday = isSameDay(_selectedDay, DateTime.now());
     final title = appointments.isEmpty
         ? 'No appointments on ${_formatDate(_selectedDay)}'
         : isToday
-            ? 'Today\'s appointments'
-            : 'Appointments on ${_formatDate(_selectedDay)}';
+        ? 'Today\'s appointments'
+        : 'Appointments on ${_formatDate(_selectedDay)}';
+
+    final isPast = _isPastSelectedDay();
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -219,16 +277,17 @@ class CalendarHomePageState extends State<CalendarHomePage> {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => RecordingPage(appointmentId: startableAppt.id),
+                      builder: (_) =>
+                          RecordingPage(appointmentId: startableAppt.id),
                     ),
                   );
                 },
                 icon: const Icon(Icons.mic),
                 label: const Text('Start Recording'),
               )
-            else
+            else if (!isPast)
               Text(
-                'Recording available within 30 minutes of an appointment.',
+                _reminderLeadTextForSelection(appointments),
                 style: TextStyle(color: Colors.grey[700]),
               ),
             const SizedBox(height: 12),
@@ -242,7 +301,9 @@ class CalendarHomePageState extends State<CalendarHomePage> {
                         contentPadding: EdgeInsets.zero,
                         leading: const Icon(Icons.event_note),
                         title: Text(
-                          appt.doctorName.isEmpty ? appt.hospitalName : appt.doctorName,
+                          appt.doctorName.isEmpty
+                              ? appt.hospitalName
+                              : appt.doctorName,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
@@ -250,11 +311,14 @@ class CalendarHomePageState extends State<CalendarHomePage> {
                         ),
                         isThreeLine: true,
                         onTap: () async {
-                          final changed = await Navigator.of(context).push<bool>(
-                            MaterialPageRoute(
-                              builder: (_) => AppointmentDetailPage(appointmentId: appt.id),
-                            ),
-                          );
+                          final changed = await Navigator.of(context)
+                              .push<bool>(
+                                MaterialPageRoute(
+                                  builder: (_) => AppointmentDetailPage(
+                                    appointmentId: appt.id,
+                                  ),
+                                ),
+                              );
                           if (changed == true && mounted) {
                             _loadAppointments();
                           }
@@ -281,4 +345,3 @@ class CalendarHomePageState extends State<CalendarHomePage> {
     return '$displayHour:$minute $period';
   }
 }
-
