@@ -359,32 +359,37 @@ class CalendarHomePageState extends State<CalendarHomePage> {
               Column(
                 children: appointments
                     .map(
-                      (appt) => ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.event_note),
-                        title: Text(
-                          appt.doctorName.isEmpty
-                              ? appt.hospitalName
-                              : appt.doctorName,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          '${appt.hospitalName}\n${_formatTime(appt.dateTime)}',
-                        ),
-                        isThreeLine: true,
-                        onTap: () async {
-                          final changed = await Navigator.of(context)
-                              .push<bool>(
-                                MaterialPageRoute(
-                                  builder: (_) => AppointmentDetailPage(
-                                    appointmentId: appt.id,
+                      (appt) => Semantics(
+                        label:
+                            'Appointment with ${appt.doctorName.isEmpty ? appt.hospitalName : appt.doctorName} at ${_formatTime(appt.dateTime)}',
+                        button: true,
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(Icons.event_note),
+                          title: Text(
+                            appt.doctorName.isEmpty
+                                ? appt.hospitalName
+                                : appt.doctorName,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(
+                            '${appt.hospitalName}\n${_formatTime(appt.dateTime)}',
+                          ),
+                          isThreeLine: true,
+                          onTap: () async {
+                            final changed = await Navigator.of(context)
+                                .push<bool>(
+                                  MaterialPageRoute(
+                                    builder: (_) => AppointmentDetailPage(
+                                      appointmentId: appt.id,
+                                    ),
                                   ),
-                                ),
-                              );
-                          if (changed == true && mounted) {
-                            _loadAppointments();
-                          }
-                        },
+                                );
+                            if (changed == true && mounted) {
+                              _loadAppointments();
+                            }
+                          },
+                        ),
                       ),
                     )
                     .toList(),
