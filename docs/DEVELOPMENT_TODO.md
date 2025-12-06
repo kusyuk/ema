@@ -298,7 +298,7 @@
   - (Optional) Text highlighting / progress indicator
 
 #### 7.2 TTS Polish (Remaining)
-- [ ] **TTS-004**: Persist TTS settings (language/rate/pitch)
+- [x] **TTS-004**: Persist TTS settings (language/rate/pitch) ✅
 - [ ] **TTS-005**: Expand language list (as needed)
 - [ ] **TTS-006**: Refine UX defaults and accessibility cues
 
@@ -313,7 +313,7 @@
   - Retrieve appointments
   - Update appointment details
   - Delete appointment
-  - Associate recordings with appointments
+  - Associate recordings with appointments (ensure recordings show in history)
 
 - [ ] **APT-002**: Appointment queries
   - Get all appointments

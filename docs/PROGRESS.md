@@ -9,7 +9,7 @@
 
 **Status**: Development In Progress  
 **Current Phase**: Phase 7 - Text-to-Speech Feature (In Progress)  
-**Completion**: ~55% of MVP features  
+**Completion**: ~58% of MVP features  
 **App Status**: ✅ Running Successfully (Initialization issues resolved)
 
 ---
@@ -96,18 +96,18 @@
 
 ### 🔄 Phase 7: Text-to-Speech Feature (IN PROGRESS)
 
-**Status**: ~30% Complete
+**Status**: ~60% Complete
 
 #### Completed:
 - ✅ Created TTS service (`TtsService`) using flutter_tts
-- ✅ Added TTS use cases (speak, stop, pause)
+- ✅ Added TTS use cases (speak, stop) and settings load/save
 - ✅ Wired TTS into DI and provider
-- ✅ Added Play/Pause/Stop controls and basic language/rate/pitch selectors on TranscriptionPage
+- ✅ Added Play/Stop controls and language/rate/pitch selectors on TranscriptionPage
+- ✅ Persist TTS settings via Hive (language/rate/pitch)
 
 #### Next Steps:
-- [ ] Polish TTS UI/UX and defaults
-- [ ] Add settings persistence (optional)
-- [ ] Broaden language list (optional)
+- [ ] Refine TTS UX defaults
+- [ ] (Optional) Expand language list
 
 ---
 
@@ -207,15 +207,15 @@
 
 ## Next Steps
 
-### Phase 7 (TTS) polish
-1. Refine TTS UI/UX defaults
-2. (Optional) Persist TTS settings (language/rate/pitch)
-3. (Optional) Broaden language list
+### Finish Phase 7 (TTS polish)
+1. Refine TTS UX defaults
+2. (Optional) Expand language list
 
-### Phase 8 (Upcoming)
-1. Appointment management UI polish
-2. Calendar integration
-3. Sharing & notifications (Phase 9/10)
+### Phase 8: Appointment Management (start)
+1. Appointment CRUD with Hive (ensure recordings are linked to appointments)
+2. Appointment list/detail UI with associated recordings/transcriptions
+3. Calendar integration (basic)
+4. Prepare for sharing/notifications (Phase 9/10)
 
 ---
 

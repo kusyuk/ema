@@ -42,7 +42,6 @@ import '../../domain/usecases/recordings/request_recording_permission.dart';
 import '../../domain/usecases/recordings/save_transcription_and_summary.dart';
 import '../../domain/usecases/tts/speak_text.dart';
 import '../../domain/usecases/tts/stop_speaking.dart';
-import '../../domain/usecases/tts/pause_speaking.dart';
 import '../../domain/usecases/tts/load_tts_settings.dart';
 import '../../domain/usecases/tts/save_tts_settings.dart';
 
@@ -229,10 +228,6 @@ Future<void> init() async {
 
   sl.registerLazySingleton<StopSpeaking>(
     () => StopSpeaking(sl<TtsService>()),
-  );
-
-  sl.registerLazySingleton<PauseSpeaking>(
-    () => PauseSpeaking(sl<TtsService>()),
   );
 
   sl.registerLazySingleton<LoadTtsSettings>(

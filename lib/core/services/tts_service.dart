@@ -6,19 +6,24 @@ import '../errors/exceptions.dart';
 class TtsService {
   final FlutterTts _tts;
 
-  TtsService() : _tts = FlutterTts();
+  TtsService() : _tts = FlutterTts() {
+    // Ensure speak() completes when playback finishes
+    _tts.awaitSpeakCompletion(true);
+  }
 
   Future<void> speak({
     required String text,
     String language = 'en-US',
-    double rate = 0.9,
+    double rate = 0.7,
     double pitch = 1.0,
+    double volume = 1.0,
   }) async {
     try {
-      Logger.info('TTS: speak start (lang: $language, rate: $rate, pitch: $pitch)');
+      Logger.info('TTS: speak start (lang: $language, rate: $rate, pitch: $pitch, volume: $volume)');
       await _tts.setLanguage(language);
       await _tts.setSpeechRate(rate);
       await _tts.setPitch(pitch);
+      await _tts.setVolume(volume.clamp(0.0, 1.0));
       await _tts.stop(); // ensure clean start
       final result = await _tts.speak(text);
       Logger.info('TTS: speak result -> $result');

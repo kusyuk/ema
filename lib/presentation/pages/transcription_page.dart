@@ -8,9 +8,9 @@ import '../../domain/usecases/summarization/summarize_text.dart';
 import '../../domain/usecases/recordings/save_transcription_and_summary.dart';
 import '../../domain/usecases/tts/speak_text.dart';
 import '../../domain/usecases/tts/stop_speaking.dart';
-import '../../domain/usecases/tts/pause_speaking.dart';
 import '../../domain/usecases/tts/load_tts_settings.dart';
 import '../../domain/usecases/tts/save_tts_settings.dart';
+import '../pages/appointments_page.dart';
 import '../providers/transcription_provider.dart';
 import '../widgets/labeled_slider.dart';
 
@@ -47,7 +47,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         saveTranscriptionAndSummary: di.sl<SaveTranscriptionAndSummary>(),
         speakText: di.sl<SpeakText>(),
         stopSpeaking: di.sl<StopSpeaking>(),
-        pauseSpeaking: di.sl<PauseSpeaking>(),
         loadTtsSettings: di.sl<LoadTtsSettings>(),
         saveTtsSettings: di.sl<SaveTtsSettings>(),
         recordingId: widget.recordingId,
@@ -351,11 +350,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               ),
               const SizedBox(width: 12),
               IconButton(
-                tooltip: 'Pause',
-                onPressed: provider.isSpeaking ? () => provider.pauseSpeaking() : null,
-                icon: const Icon(Icons.pause),
-              ),
-              IconButton(
                 tooltip: 'Stop',
                 onPressed: provider.isSpeaking ? () => provider.stopSpeaking() : null,
                 icon: const Icon(Icons.stop),
@@ -496,11 +490,9 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     result.fold(
       onSuccess: (_) {
         if (mounted) {
-          Navigator.of(context).pop({
-            'transcription': provider.transcription,
-            'summary': provider.summary,
-            'saved': true,
-          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Saved transcription & summary')),
+          );
         }
       },
       onError: (failure) {

@@ -9,7 +9,6 @@ import '../../domain/usecases/summarization/summarize_text.dart';
 import '../../domain/usecases/recordings/save_transcription_and_summary.dart';
 import '../../domain/usecases/tts/speak_text.dart';
 import '../../domain/usecases/tts/stop_speaking.dart';
-import '../../domain/usecases/tts/pause_speaking.dart';
 import '../../domain/usecases/tts/load_tts_settings.dart';
 import '../../domain/usecases/tts/save_tts_settings.dart';
 
@@ -20,7 +19,6 @@ class TranscriptionProvider extends ChangeNotifier {
   final SaveTranscriptionAndSummary _saveTranscriptionAndSummary;
   final SpeakText _speakText;
   final StopSpeaking _stopSpeaking;
-  final PauseSpeaking _pauseSpeaking;
   final LoadTtsSettings _loadTtsSettings;
   final SaveTtsSettings _saveTtsSettings;
   final String? _recordingId;
@@ -35,7 +33,7 @@ class TranscriptionProvider extends ChangeNotifier {
   bool _isSpeaking = false;
   String? _ttsError;
   String _ttsLanguage = 'en-US';
-  double _ttsRate = 0.9;
+  double _ttsRate = 0.7;
   double _ttsPitch = 1.0;
 
   TranscriptionProvider({
@@ -44,7 +42,6 @@ class TranscriptionProvider extends ChangeNotifier {
     required SaveTranscriptionAndSummary saveTranscriptionAndSummary,
     required SpeakText speakText,
     required StopSpeaking stopSpeaking,
-    required PauseSpeaking pauseSpeaking,
     required LoadTtsSettings loadTtsSettings,
     required SaveTtsSettings saveTtsSettings,
     String? recordingId,
@@ -53,7 +50,6 @@ class TranscriptionProvider extends ChangeNotifier {
         _saveTranscriptionAndSummary = saveTranscriptionAndSummary,
         _speakText = speakText,
         _stopSpeaking = stopSpeaking,
-        _pauseSpeaking = pauseSpeaking,
         _loadTtsSettings = loadTtsSettings,
         _saveTtsSettings = saveTtsSettings,
         _recordingId = recordingId;
@@ -238,22 +234,6 @@ class TranscriptionProvider extends ChangeNotifier {
   /// Stop TTS
   Future<void> stopSpeaking() async {
     final result = await _stopSpeaking(NoParams());
-    result.fold(
-      onSuccess: (_) {
-        _isSpeaking = false;
-        notifyListeners();
-      },
-      onError: (failure) {
-        _ttsError = failure.message;
-        _isSpeaking = false;
-        notifyListeners();
-      },
-    );
-  }
-
-  /// Pause TTS
-  Future<void> pauseSpeaking() async {
-    final result = await _pauseSpeaking(NoParams());
     result.fold(
       onSuccess: (_) {
         _isSpeaking = false;
