@@ -36,7 +36,7 @@ class _RootPageState extends State<RootPage> {
           opacity: 0.12,
         ),
         currentIndex: _index,
-        backgroundColor: AppTheme.primaryLight,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         items: [
           BottomBarItem(
             icon: const Icon(Icons.calendar_month),

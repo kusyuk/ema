@@ -71,8 +71,8 @@ class AppTheme {
 
     return base.copyWith(
       appBarTheme: const AppBarTheme(
-        backgroundColor: iconDefault, // use palette blue
-        foregroundColor: primaryLight,
+        backgroundColor: primaryDark,
+        foregroundColor: textOnDark,
         elevation: 0,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -228,7 +228,7 @@ class AppTheme {
         ),
         hintStyle: const TextStyle(color: textSecondaryOnDark),
       ),
-      iconTheme: const IconThemeData(color: iconDefault),
+      iconTheme: const IconThemeData(color: textOnDark),
     );
   }
 }

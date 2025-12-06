@@ -252,6 +252,18 @@ class CalendarHomePageState extends State<CalendarHomePage> {
                         });
                       },
                       calendarStyle: const CalendarStyle(
+                        defaultTextStyle: TextStyle(
+                          color: AppTheme.textPrimaryDark,
+                          fontSize: 14,
+                        ),
+                        weekendTextStyle: TextStyle(
+                          color: AppTheme.textPrimaryDark,
+                          fontSize: 14,
+                        ),
+                        outsideTextStyle: TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 14,
+                        ),
                         todayDecoration: BoxDecoration(
                           color: AppTheme.accent,
                           shape: BoxShape.circle,
@@ -326,6 +338,7 @@ class CalendarHomePageState extends State<CalendarHomePage> {
     final isPast = _isPastSelectedDay();
 
     return Card(
+      color: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -337,7 +350,7 @@ class CalendarHomePageState extends State<CalendarHomePage> {
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppTheme.textPrimaryDark,
+                color: AppTheme.textOnDark,
               ),
             ),
             const SizedBox(height: 12),
@@ -371,11 +384,14 @@ class CalendarHomePageState extends State<CalendarHomePage> {
             else if (!isPast)
               Text(
                 _reminderLeadTextForSelection(appointments),
-                style: const TextStyle(color: AppTheme.textSecondary),
+                style: const TextStyle(color: AppTheme.textSecondaryOnDark),
               ),
             const SizedBox(height: 12),
             if (appointments.isEmpty)
-              const Text('No appointments')
+              const Text(
+                'No appointments',
+                style: TextStyle(color: AppTheme.textOnDark),
+              )
             else
               Column(
                 children: appointments
@@ -391,10 +407,16 @@ class CalendarHomePageState extends State<CalendarHomePage> {
                             appt.doctorName.isEmpty
                                 ? appt.hospitalName
                                 : appt.doctorName,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textOnDark,
+                            ),
                           ),
                           subtitle: Text(
                             '${appt.hospitalName}\n${_formatTime(appt.dateTime)}',
+                            style: const TextStyle(
+                              color: AppTheme.textSecondaryOnDark,
+                            ),
                           ),
                           isThreeLine: true,
                           onTap: () async {
