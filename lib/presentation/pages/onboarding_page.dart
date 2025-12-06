@@ -69,14 +69,14 @@ class OnboardingPage extends StatelessWidget {
         style: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w600,
-          color: AppTheme.primaryDark,
+          color: AppTheme.textOnDark,
         ),
       ),
       bodyWidget: Text(
         body,
         style: const TextStyle(
           fontSize: 16,
-          color: AppTheme.textSecondary,
+          color: AppTheme.textSecondaryOnDark,
         ),
       ),
       decoration: const PageDecoration(

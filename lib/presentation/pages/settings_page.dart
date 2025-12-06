@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/di/injection_container.dart' as di;
 import '../../core/utils/result.dart';
@@ -19,10 +20,12 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _saving = false;
   String? _error;
 
+  String _themeMode = 'system';
   String _language = 'en-US';
   double _rate = 0.7;
   double _pitch = 1.0;
 
+  final _box = di.sl<Box<dynamic>>();
   final _loadTts = di.sl<LoadTtsSettings>();
   final _saveTts = di.sl<SaveTtsSettings>();
 
@@ -42,6 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
     result.fold(
       onSuccess: (settings) {
         setState(() {
+          _themeMode = (_box.get('theme_mode') as String?) ?? 'system';
           _language = settings.language;
           _rate = settings.rate;
           _pitch = settings.pitch;
@@ -136,6 +140,32 @@ class _SettingsPageState extends State<SettingsPage> {
       children: [
         const _Section(
           title: 'General',
+          children: [],
+        ),
+        _SettingTile(
+          icon: Icons.brightness_6_outlined,
+          title: 'Theme',
+          subtitle: 'Light / Dark / System',
+          trailing: DropdownButton<String>(
+            value: _themeMode,
+            items: const [
+              DropdownMenuItem(value: 'system', child: Text('System')),
+              DropdownMenuItem(value: 'light', child: Text('Light')),
+              DropdownMenuItem(value: 'dark', child: Text('Dark')),
+            ],
+            onChanged: (v) {
+              if (v == null) return;
+              setState(() => _themeMode = v);
+              _box.put('theme_mode', v);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Theme set to ${v[0].toUpperCase()}${v.substring(1)}')),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        const _Section(
+          title: 'About',
           children: [
             _SettingTile(
               icon: Icons.info_outline,

@@ -270,7 +270,7 @@ class CalendarHomePageState extends State<CalendarHomePage> {
                         formatButtonVisible: false,
                         titleCentered: true,
                         titleTextStyle: TextStyle(
-                          color: AppTheme.textPrimaryDark,
+                          color: AppTheme.textOnDark,
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'core/di/injection_container.dart' as di;
 import 'core/constants/app_constants.dart';
 import 'core/theme/app_theme.dart';
 import 'presentation/pages/root_page.dart';
 import 'presentation/pages/onboarding_page.dart';
-import 'package:hive/hive.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,18 +59,57 @@ void main() async {
   }
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   final bool showOnboarding;
 
   const MainApp({super.key, required this.showOnboarding});
 
   @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  final _box = di.sl<Box<dynamic>>();
+
+  ThemeMode _resolveThemeMode(Box<dynamic> box) {
+    final mode = (box.get('theme_mode') as String?) ?? 'system';
+    switch (mode) {
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      default:
+        return ThemeMode.system;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: AppConstants.appName,
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme(),
-      home: showOnboarding ? const OnboardingPage() : const RootPage(),
+    return ValueListenableBuilder(
+      valueListenable: _box.listenable(keys: ['theme_mode']),
+      builder: (context, Box<dynamic> box, _) {
+        final themeMode = _resolveThemeMode(box);
+        return MaterialApp(
+          title: AppConstants.appName,
+          debugShowCheckedModeBanner: false,
+          themeMode: themeMode,
+          theme: AppTheme.lightTheme(),
+          darkTheme: AppTheme.darkTheme(),
+          builder: (context, child) {
+            final mediaQuery = MediaQuery.of(context);
+            // Allow user accessibility scaling, but never go below 1.0
+            final clampedScaler = mediaQuery.textScaler.clamp(
+              minScaleFactor: 1.0,
+              maxScaleFactor: 1.6,
+            );
+            return MediaQuery(
+              data: mediaQuery.copyWith(textScaler: clampedScaler),
+              child: child ?? const SizedBox.shrink(),
+            );
+          },
+          home: widget.showOnboarding ? const OnboardingPage() : const RootPage(),
+        );
+      },
     );
   }
 }

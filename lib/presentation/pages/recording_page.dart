@@ -310,7 +310,7 @@ class _RecordingPageState extends State<RecordingPage> {
     required Color color,
     bool isLarge = false,
   }) {
-    final size = isLarge ? 80.0 : 60.0;
+    final size = isLarge ? 88.0 : 64.0; // ensure >=48px touch targets
     return Column(
       children: [
         SizedBox(
