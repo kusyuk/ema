@@ -8,6 +8,7 @@ import '../../domain/usecases/appointments/get_appointments.dart';
 import 'appointment_form_page.dart';
 import 'appointment_detail_page.dart';
 import 'recording_page.dart';
+import '../../core/theme/app_theme.dart';
 
 class CalendarHomePage extends StatefulWidget {
   const CalendarHomePage({super.key});
@@ -205,36 +206,87 @@ class CalendarHomePageState extends State<CalendarHomePage> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          TableCalendar<Appointment>(
-            firstDay: DateTime(2020),
-            lastDay: DateTime(2030),
-            focusedDay: _focusedDay,
-            selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
-            eventLoader: _eventsForDay,
-            calendarFormat: CalendarFormat.month,
-            availableCalendarFormats: const {CalendarFormat.month: 'Month'},
-            sixWeekMonthsEnforced: true,
-            rowHeight: 42,
-            daysOfWeekHeight: 20,
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
-              });
-            },
-            calendarStyle: const CalendarStyle(
-              todayDecoration: BoxDecoration(
-                color: Colors.orange,
-                shape: BoxShape.circle,
-              ),
-              selectedDecoration: BoxDecoration(
-                color: Colors.blue,
-                shape: BoxShape.circle,
-              ),
+          Container(
+            decoration: BoxDecoration(
+              color: AppTheme.primaryDark,
+              borderRadius: BorderRadius.circular(28),
             ),
-            headerStyle: const HeaderStyle(
-              formatButtonVisible: false,
-              titleCentered: true,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Column(
+              children: [
+                const SizedBox(height: 8),
+                const Text(
+                  'Appointments',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.primaryLight,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Card(
+                  color: AppTheme.primaryLight,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  margin: EdgeInsets.zero,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: TableCalendar<Appointment>(
+                      firstDay: DateTime(2020),
+                      lastDay: DateTime(2030),
+                      focusedDay: _focusedDay,
+                      selectedDayPredicate: (day) =>
+                          isSameDay(day, _selectedDay),
+                      eventLoader: _eventsForDay,
+                      calendarFormat: CalendarFormat.month,
+                      availableCalendarFormats: const {
+                        CalendarFormat.month: 'Month',
+                      },
+                      sixWeekMonthsEnforced: true,
+                      rowHeight: 42,
+                      daysOfWeekHeight: 20,
+                      onDaySelected: (selectedDay, focusedDay) {
+                        setState(() {
+                          _selectedDay = selectedDay;
+                          _focusedDay = focusedDay;
+                        });
+                      },
+                      calendarStyle: const CalendarStyle(
+                        todayDecoration: BoxDecoration(
+                          color: AppTheme.accent,
+                          shape: BoxShape.circle,
+                        ),
+                        selectedDecoration: BoxDecoration(
+                          color: AppTheme.primaryDark,
+                          shape: BoxShape.circle,
+                        ),
+                        markerDecoration: BoxDecoration(
+                          color: AppTheme.accent,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      headerStyle: const HeaderStyle(
+                        formatButtonVisible: false,
+                        titleCentered: true,
+                        titleTextStyle: TextStyle(
+                          color: AppTheme.textPrimaryDark,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        leftChevronIcon: Icon(
+                          Icons.chevron_left,
+                          color: AppTheme.iconDefault,
+                        ),
+                        rightChevronIcon: Icon(
+                          Icons.chevron_right,
+                          color: AppTheme.iconDefault,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 16),
@@ -273,17 +325,27 @@ class CalendarHomePageState extends State<CalendarHomePage> {
             ),
             const SizedBox(height: 12),
             if (startableAppt != null)
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          RecordingPage(appointmentId: startableAppt.id),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            RecordingPage(appointmentId: startableAppt.id),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.accent,
+                    foregroundColor: AppTheme.primaryLight,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40),
                     ),
-                  );
-                },
-                icon: const Icon(Icons.mic),
-                label: const Text('Start Recording'),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: const Text('Record Session'),
+                ),
               )
             else if (!isPast)
               Text(
