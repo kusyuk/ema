@@ -5,6 +5,7 @@ import '../../core/services/audio_player_service.dart';
 import '../../core/services/tts_service.dart';
 import '../../core/utils/file_storage.dart';
 import '../../core/utils/result.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../domain/entities/appointment.dart';
 import '../../domain/entities/recording.dart';
 import '../../domain/usecases/appointments/get_appointment_by_id.dart';
@@ -32,6 +33,44 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   final TtsService _tts = di.sl<TtsService>();
   bool _isSpeaking = false;
   String? _ttsError;
+
+  void _shareAppointment() {
+    if (_appointment == null) return;
+    final appt = _appointment!;
+
+    Recording? preferred;
+    for (final rec in _recordings) {
+      if ((rec.summarizedTranscription ?? '').isNotEmpty) {
+        preferred = rec;
+        break;
+      }
+    }
+    preferred ??= _recordings.isNotEmpty ? _recordings.first : null;
+
+    final buffer = StringBuffer();
+    buffer.writeln('Appointment');
+    buffer.writeln('Doctor: ${appt.doctorName}');
+    buffer.writeln('Hospital: ${appt.hospitalName}');
+    buffer.writeln('When: ${_formatDateTime(appt.dateTime)}');
+    if ((appt.speciality ?? '').isNotEmpty) {
+      buffer.writeln('Speciality: ${appt.speciality}');
+    }
+    if ((appt.remarks ?? '').isNotEmpty) {
+      buffer.writeln('Notes: ${appt.remarks}');
+    }
+    if (preferred != null) {
+      buffer.writeln('');
+      if ((preferred.summarizedTranscription ?? '').isNotEmpty) {
+        buffer.writeln('Summary:');
+        buffer.writeln(preferred.summarizedTranscription);
+      } else if ((preferred.rawTranscription ?? '').isNotEmpty) {
+        buffer.writeln('Transcription:');
+        buffer.writeln(preferred.rawTranscription);
+      }
+    }
+
+    Share.share(buffer.toString(), subject: 'Appointment ${appt.doctorName}');
+  }
 
   @override
   void initState() {
@@ -161,6 +200,11 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                       );
                     }
                   },
+          ),
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: 'Share',
+            onPressed: _appointment == null ? null : _shareAppointment,
           ),
           IconButton(icon: const Icon(Icons.refresh), onPressed: _load),
         ],
