@@ -9,7 +9,7 @@
 
 **Status**: Development In Progress  
 **Current Phase**: Phase 8 - Appointment Management (In Progress)  
-**Completion**: ~67% of MVP features  
+**Completion**: ~70% of MVP features  
 **App Status**: ✅ Running Successfully (Initialization issues resolved)
 
 ---
@@ -214,11 +214,13 @@
 2. (Optional) Expand language list
 
 ### Phase 8: Appointment Management (in progress)
-1. Appointment CRUD with Hive (create/edit form added; delete implemented; finish validation + persistence polish)
-2. Appointment list/detail UI with associated recordings/transcriptions (detail has inline playback+TTS and delete; ensure linkage consistency + edit persist)
-3. Calendar-first home redesign with bottom navigation (Home/Calendar, History, Settings) and FAB for add appointment (inspired by provided mock); keep current palette
-4. Calendar integration: highlight appointment dates, selected-day filter, next-appointment card, quick “Start Recording” near appointment time window
-5. Prepare for sharing/notifications (Phase 9/10)
+1. Appointment CRUD with Hive (create/edit/delete implemented; cascades recordings/audio; linkage consistent) ✅
+2. Appointment list/detail UI with associated recordings/transcriptions (inline playback+TTS; edit/delete) ✅
+3. Calendar-first home with bottom navigation (Home/Calendar, History, Settings) and FAB add-appointment; keep current palette ✅
+4. Calendar integration: highlighted dates, selected-day filter, next-day card, quick “Start Recording” near appointment window ✅
+5. History tab with filters/search ✅
+6. Settings stub ✅
+7. Prepare for sharing/notifications (Phase 9/10) — pending
 
 ---
 

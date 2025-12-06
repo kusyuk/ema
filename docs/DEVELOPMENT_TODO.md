@@ -308,13 +308,13 @@
 ### Phase 8: Appointment Management (Week 8-9)
 
 #### 8.1 Appointment Data Management
-- [ ] **APT-001**: Appointment CRUD operations
+- [x] **APT-001**: Appointment CRUD operations
   - Create appointment with validation (form UI implemented; persist/validate across layers)
   - Save to Hive database
   - Retrieve appointments
   - Update appointment details (UI hooked; ensure persistence)
   - Delete appointment (implemented; cascades recordings/audio)
-  - Associate recordings with appointments (ensure recordings show in history; linkage consistent across edit/delete)
+  - Associate recordings with appointments (ensure recordings show in history; linkage consistent across edit/delete) ✅
 
 - [ ] **APT-002**: Appointment queries
   - Get all appointments
@@ -324,7 +324,7 @@
   - Sort and filter functionality
 
 #### 8.2 Appointment UI
-- [ ] **UI-APT-001**: Create appointment screen
+- [x] **UI-APT-001**: Create appointment screen
   - Date/time picker (large, accessible) ✅
   - Hospital name input ✅
   - Doctor name input ✅
@@ -334,7 +334,7 @@
   - Save button ✅
   - Form validation (basic) ✅
 
-- [ ] **UI-APT-002**: Appointment list screen
+- [x] **UI-APT-002**: Appointment list screen
   - Timeline view
   - Appointment cards (basic) ✅
   - Date grouping
@@ -342,7 +342,7 @@
   - Search functionality
   - Pull to refresh ✅
 
-- [ ] **UI-APT-003**: Appointment detail screen
+- [x] **UI-APT-003**: Appointment detail screen
   - Display all appointment information ✅
   - Show associated recordings ✅
   - Display transcriptions (raw and summarized) ✅
@@ -352,13 +352,13 @@
   - Delete appointment option ✅ (cascades recordings/audio)
   - Share button
 
-- [ ] **UI-APT-004**: Calendar-first Home + Bottom Nav
-  - Bottom navigation with 3 tabs: Home/Calendar (default), History (timeline), Settings
-  - Calendar view highlighting appointment dates; selecting date filters list/card
-  - Next Appointment/Selected Day card with inline actions
-  - FAB “New Appointment” on Home/Calendar
-  - “Start Recording” surfaced when within configurable window of selected/upcoming appointment (use existing recording flow)
-  - Keep current EMA palette; mirror layout from provided mock (round cards, high contrast)
+- [x] **UI-APT-004**: Calendar-first Home + Bottom Nav
+  - Bottom navigation with 3 tabs: Home/Calendar (default), History (timeline), Settings ✅
+  - Calendar view highlighting appointment dates; selecting date filters list/card ✅
+  - Next Appointment/Selected Day card with inline actions ✅
+  - FAB “New Appointment” on Home/Calendar ✅
+  - “Start Recording” surfaced when within configurable window of selected/upcoming appointment (use existing recording flow) ✅
+  - Keep current EMA palette; mirror layout from provided mock (round cards, high contrast) ✅
 
 - [ ] **UI-APT-004**: Calendar view
   - Month/year navigation

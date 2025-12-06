@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'core/di/injection_container.dart' as di;
 import 'core/constants/app_constants.dart';
-import 'presentation/pages/home_page.dart';
+import 'presentation/pages/root_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,7 +73,7 @@ class MainApp extends StatelessWidget {
           bodySmall: TextStyle(fontSize: AppConstants.defaultFontSize),
         ),
       ),
-      home: const HomePage(),
+      home: const RootPage(),
     );
   }
 }
