@@ -9,7 +9,7 @@
 
 **Status**: Development In Progress  
 **Current Phase**: Phase 8 - Appointment Management (In Progress)  
-**Completion**: ~70% of MVP features  
+**Completion**: ~75% of MVP features  
 **App Status**: ✅ Running Successfully (Initialization issues resolved)
 
 ---
@@ -221,6 +221,8 @@
 5. History tab with filters/search ✅
 6. Settings stub ✅
 7. Prepare for sharing/notifications (Phase 9/10) — pending
+8. Reminders Phase (core): reminder toggle + lead time, scheduling via local notifications, cancel on delete, text updates based on reminder window ✅
+9. Sharing MVP: share appointment + best available summary/transcription ✅
 
 ---
 

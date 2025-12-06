@@ -144,6 +144,7 @@ EMA is a Flutter mobile application designed to assist elderly patients during m
 - **FR-6.2**: Associate recording with appointment (partial: linked on recording stop; ensure full CRUD linkage)
 - **FR-6.3**: Link multiple recordings to single appointment
 - **FR-6.4**: Add Appointment via FAB on Home/Calendar tab (calendar-first flow)
+- **FR-6.5**: Reminder settings (enable/disable, lead time) and schedule local notification
 - **Priority**: P0 (Critical)
 
 #### FR-7: Appointment History
@@ -164,7 +165,7 @@ EMA is a Flutter mobile application designed to assist elderly patients during m
 - **FR-9.1**: Display appointments in calendar view (default landing)
 - **FR-9.2**: Navigate by month/year
 - **FR-9.3**: Highlight dates with appointments; selecting a date filters the list/card below
-- **FR-9.4**: “Start Recording” surfaced when within a configurable window of a selected/upcoming appointment
+- **FR-9.4**: “Start Recording” surfaced when within a configurable window of a selected/upcoming appointment; messaging reflects reminder window; hide for past dates
 - **Priority**: P1 (High)
 
 #### FR-10: Appointment Reminders

@@ -315,6 +315,7 @@
   - Update appointment details (UI hooked; ensure persistence)
   - Delete appointment (implemented; cascades recordings/audio)
   - Associate recordings with appointments (ensure recordings show in history; linkage consistent across edit/delete) ✅
+  - Reminder fields (enable + lead time) ✅
 
 - [ ] **APT-002**: Appointment queries
   - Get all appointments
@@ -359,6 +360,7 @@
   - FAB “New Appointment” on Home/Calendar ✅
   - “Start Recording” surfaced when within configurable window of selected/upcoming appointment (use existing recording flow) ✅
   - Keep current EMA palette; mirror layout from provided mock (round cards, high contrast) ✅
+  - Recording-availability text reflects reminder window; hidden for past dates ✅
 
 - [ ] **UI-APT-004**: Calendar view
   - Month/year navigation
@@ -369,6 +371,15 @@
 ---
 
 ### Phase 9: Sharing & Export (Week 9-10)
+- [x] **SHARE-001**: Share service (text)
+  - Share appointment details + best available summary/transcription ✅
+  - UI: share button in appointment detail ✅
+- [ ] **SHARE-002**: Share UI enhancements
+  - Modal with options (summary only, summary+transcription)
+  - Optional include audio file/link
+  - Copy to clipboard
+- [ ] **SHARE-003**: Export (future)
+  - PDF export (deferred)
 
 #### 9.1 Sharing Implementation
 - [ ] **SHARE-001**: Share service
