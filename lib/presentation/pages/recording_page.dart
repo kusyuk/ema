@@ -429,8 +429,9 @@ class _RecordingPageState extends State<RecordingPage> {
                   final apptResult = await getAppt(GetAppointmentByIdParams(appointmentId));
                   await apptResult.fold(
                     onSuccess: (appt) async {
+                      // Enforce one-recording-per-appointment
                       final updated = appt.copyWith(
-                        recordingIds: [...appt.recordingIds, recording.id],
+                        recordingIds: [recording.id],
                         updatedAt: DateTime.now(),
                       );
                       await updateAppt(UpdateAppointmentParams(updated));
