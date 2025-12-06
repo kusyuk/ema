@@ -8,6 +8,7 @@ import '../../domain/entities/tts_settings.dart';
 import '../../domain/usecases/tts/load_tts_settings.dart';
 import '../../domain/usecases/tts/save_tts_settings.dart';
 import 'help_page.dart';
+import '../../core/theme/app_theme.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -94,6 +95,8 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppTheme.iconDefault,
+        foregroundColor: AppTheme.primaryLight,
         title: const Text(
           'Settings',
           style: TextStyle(fontSize: AppConstants.defaultFontSize),

@@ -5,6 +5,7 @@ import '../../core/utils/result.dart';
 import '../../domain/entities/appointment.dart';
 import '../../domain/usecases/appointments/get_appointments.dart';
 import '../../core/services/refresh_service.dart';
+import '../../core/theme/app_theme.dart';
 import 'appointment_detail_page.dart';
 
 enum _HistoryFilter { all, upcoming, past }
@@ -74,6 +75,8 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppTheme.iconDefault,
+        foregroundColor: AppTheme.primaryLight,
         title: const Text(
           'History',
           style: TextStyle(fontSize: AppConstants.defaultFontSize),

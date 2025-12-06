@@ -159,6 +159,8 @@ class CalendarHomePageState extends State<CalendarHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppTheme.iconDefault,
+        foregroundColor: AppTheme.primaryLight,
         title: const Text(
           'Appointments',
           style: TextStyle(fontSize: AppConstants.defaultFontSize),
@@ -194,6 +196,10 @@ class CalendarHomePageState extends State<CalendarHomePage> {
   }
 
   Widget _buildContent() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final onSurface = colorScheme.onSurface;
+    final onSurfaceMuted = colorScheme.onSurface.withValues(alpha: 0.6);
+
     final selectedEvents = _eventsForDay(_selectedDay);
 
     final today = DateTime(
@@ -251,28 +257,28 @@ class CalendarHomePageState extends State<CalendarHomePage> {
                           _focusedDay = focusedDay;
                         });
                       },
-                      calendarStyle: const CalendarStyle(
+                      calendarStyle: CalendarStyle(
                         defaultTextStyle: TextStyle(
-                          color: AppTheme.textPrimaryDark,
+                          color: onSurface,
                           fontSize: 14,
                         ),
                         weekendTextStyle: TextStyle(
-                          color: AppTheme.textPrimaryDark,
+                          color: onSurface,
                           fontSize: 14,
                         ),
                         outsideTextStyle: TextStyle(
-                          color: AppTheme.textSecondary,
+                          color: onSurfaceMuted,
                           fontSize: 14,
                         ),
-                        todayDecoration: BoxDecoration(
+                        todayDecoration: const BoxDecoration(
                           color: AppTheme.accent,
                           shape: BoxShape.circle,
                         ),
-                        selectedDecoration: BoxDecoration(
+                        selectedDecoration: const BoxDecoration(
                           color: AppTheme.primaryDark,
                           shape: BoxShape.circle,
                         ),
-                        markerDecoration: BoxDecoration(
+                        markerDecoration: const BoxDecoration(
                           color: AppTheme.accent,
                           shape: BoxShape.circle,
                         ),
@@ -328,6 +334,10 @@ class CalendarHomePageState extends State<CalendarHomePage> {
     List<Appointment> appointments,
     Appointment? startableAppt,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final onSurface = colorScheme.onSurface;
+    final onSurfaceMuted = colorScheme.onSurface.withValues(alpha: 0.7);
+    final surface = colorScheme.surface;
     final isToday = isSameDay(_selectedDay, DateTime.now());
     final title = appointments.isEmpty
         ? 'No appointments on ${_formatDate(_selectedDay)}'
@@ -338,7 +348,7 @@ class CalendarHomePageState extends State<CalendarHomePage> {
     final isPast = _isPastSelectedDay();
 
     return Card(
-      color: Theme.of(context).colorScheme.surface,
+      color: surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -347,10 +357,10 @@ class CalendarHomePageState extends State<CalendarHomePage> {
           children: [
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppTheme.textOnDark,
+                color: onSurface,
               ),
             ),
             const SizedBox(height: 12),
@@ -384,14 +394,11 @@ class CalendarHomePageState extends State<CalendarHomePage> {
             else if (!isPast)
               Text(
                 _reminderLeadTextForSelection(appointments),
-                style: const TextStyle(color: AppTheme.textSecondaryOnDark),
+                style: TextStyle(color: onSurfaceMuted),
               ),
             const SizedBox(height: 12),
             if (appointments.isEmpty)
-              const Text(
-                'No appointments',
-                style: TextStyle(color: AppTheme.textOnDark),
-              )
+              Text('No appointments', style: TextStyle(color: onSurface))
             else
               Column(
                 children: appointments
@@ -407,16 +414,14 @@ class CalendarHomePageState extends State<CalendarHomePage> {
                             appt.doctorName.isEmpty
                                 ? appt.hospitalName
                                 : appt.doctorName,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.textOnDark,
+                              color: onSurface,
                             ),
                           ),
                           subtitle: Text(
                             '${appt.hospitalName}\n${_formatTime(appt.dateTime)}',
-                            style: const TextStyle(
-                              color: AppTheme.textSecondaryOnDark,
-                            ),
+                            style: TextStyle(color: onSurfaceMuted),
                           ),
                           isThreeLine: true,
                           onTap: () async {
