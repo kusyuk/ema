@@ -9,7 +9,7 @@
 
 **Status**: Development In Progress  
 **Current Phase**: Phase 11 - UI/UX & Accessibility (In Progress)  
-**Completion**: ~80% of MVP features  
+**Completion**: ~82% of MVP features  
 **App Status**: ✅ Running Successfully (Initialization issues resolved)
 
 ---
@@ -202,6 +202,10 @@
 - ✅ Settings: theme selector placed inside General card; TTS defaults persisted
 - ✅ Appointment form: Doctor Name now optional for faster entry
 - ✅ Global refresh bus keeps Home/History in sync after CRUD
+- ✅ Onboarding refreshed (welcome, consent, summaries/TTS, reminders, privacy)
+- ✅ Help & FAQ page linked from Settings
+- ✅ App icon generated from `assets/ema_icon.webp` (Android/iOS)
+- ✅ Groq prompt streamlined (single system prompt; concise user instructions)
 
 ### Code Quality
 - ✅ Zero compilation errors

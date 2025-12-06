@@ -459,6 +459,7 @@
 - [x] **UI-SET-002**: Move Theme selector into the General card on Settings
 - [x] **UI-FORM-003**: Make Doctor Name optional on appointment form (faster entry)
 - [x] **NAV-REFRESH-001**: Add RefreshService bus to sync Home/History after appointment CRUD
+- [x] **UI-ICON-001**: Set app icon from `assets/ema_icon.webp`
 
 #### 11.2 Navigation & Layout
 - [x] **UI-NAV-001**: Main navigation
@@ -475,18 +476,16 @@
   - TTS defaults (language/rate/pitch) adjustable and persisted
   - Accessibility and privacy sections (informational; more actions pending)
 
-- [ ] **UI-ONB-001**: First-time user onboarding
-  - Welcome screen
-  - Feature introduction
-  - Permission requests
-  - Basic tutorial
-  - Skip option
+- [x] **UI-ONB-001**: First-time user onboarding
+  - Welcome screen, consent reminder, summaries/TTS, reminders, privacy
+  - Skip and Done options; persisted flag in Hive
 
-- [ ] **UI-HELP-001**: Help & documentation
-  - In-app help section
-  - FAQ
-  - Contact support option
-  - Tutorial videos (optional)
+- [x] **UI-HELP-001**: Help & documentation
+  - In-app Help & FAQ page (recording, summaries, reminders, privacy, contact)
+  - Linked from Settings
+
+#### 11.3 Prompt & Content
+- [x] **PROMPT-001**: Revisit Groq summarization prompt template (tone, sections, constraints) to align with latest UX copy
 
 ---
 
