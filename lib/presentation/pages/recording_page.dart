@@ -12,6 +12,9 @@ import '../../domain/usecases/recordings/resume_recording.dart';
 import '../../domain/usecases/recordings/check_recording_permission.dart';
 import '../../domain/usecases/recordings/request_recording_permission.dart';
 import '../../domain/usecases/recordings/create_recording.dart';
+import '../../domain/usecases/appointments/create_appointment.dart';
+import '../../domain/usecases/appointments/get_appointment_by_id.dart';
+import '../../domain/usecases/appointments/update_appointment.dart';
 import '../pages/transcription_page.dart';
 import '../providers/recording_provider.dart';
 
@@ -343,28 +346,66 @@ class _RecordingPageState extends State<RecordingPage> {
             // Get recording duration
             final recorderService = di.sl<AudioRecorderService>();
             final duration = recorderService.currentDuration;
-            
+            final fileName = filePath.split('/').last;
+
+            // Ensure we have an appointment ID; create a placeholder if none
+            String appointmentId = widget.appointmentId ?? '';
+            if (appointmentId.isEmpty) {
+              final createAppointment = di.sl<CreateAppointment>();
+              final now = DateTime.now();
+              final apptResult = await createAppointment(
+                CreateAppointmentParams(
+                  dateTime: now,
+                  hospitalName: 'Unassigned',
+                  doctorName: 'Unknown',
+                  remarks: 'Auto-created for recording',
+                  location: '',
+                  speciality: '',
+                ),
+              );
+              apptResult.fold(
+                onSuccess: (appt) {
+                  appointmentId = appt.id;
+                },
+                onError: (_) {},
+              );
+            }
+
             // Create recording entry
             final createRecording = di.sl<CreateRecording>();
-            final fileName = filePath.split('/').last;
-            
             final createResult = await createRecording(
               CreateRecordingParams(
-                appointmentId: widget.appointmentId ?? '',
+                appointmentId: appointmentId,
                 audioFilePath: fileName,
                 duration: duration,
               ),
             );
             
             createResult.fold(
-              onSuccess: (recording) {
+              onSuccess: (recording) async {
+                // Link recording to appointment if appointment exists
+                if (appointmentId.isNotEmpty) {
+                  final getAppt = di.sl<GetAppointmentById>();
+                  final updateAppt = di.sl<UpdateAppointment>();
+                  final apptResult = await getAppt(GetAppointmentByIdParams(appointmentId));
+                  await apptResult.fold(
+                    onSuccess: (appt) async {
+                      final updated = appt.copyWith(
+                        recordingIds: [...appt.recordingIds, recording.id],
+                        updatedAt: DateTime.now(),
+                      );
+                      await updateAppt(UpdateAppointmentParams(updated));
+                    },
+                    onError: (_) async {},
+                  );
+                }
+
                 // Navigate to transcription page
-                // Pass only the filename, not the full path
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (context) => TranscriptionPage(
                       audioFilePath: fileName,
-                      appointmentId: widget.appointmentId,
+                      appointmentId: appointmentId.isEmpty ? null : appointmentId,
                       recordingId: recording.id,
                     ),
                   ),

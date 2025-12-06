@@ -5,6 +5,7 @@ import '../../core/utils/result.dart';
 import '../../domain/entities/appointment.dart';
 import '../../domain/usecases/appointments/get_appointments.dart';
 import 'recording_page.dart';
+import 'appointment_detail_page.dart';
 
 /// Appointments page - Display list of appointments
 class AppointmentsPage extends StatefulWidget {
@@ -204,10 +205,9 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         ),
         trailing: const Icon(Icons.chevron_right),
         onTap: () {
-          // TODO: Navigate to appointment details page
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Appointment details coming soon'),
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => AppointmentDetailPage(appointmentId: appointment.id),
             ),
           );
         },
