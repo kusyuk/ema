@@ -3,7 +3,7 @@
 
 ### Project Status: Development In Progress
 ### Last Updated: 2025
-### Current Phase: Phase 8 - Appointment Management
+### Current Phase: Phase 8 - Appointment Management (calendar-first redesign approved; keep current palette)
 
 ---
 
@@ -313,8 +313,8 @@
   - Save to Hive database
   - Retrieve appointments
   - Update appointment details (UI hooked; ensure persistence)
-  - Delete appointment (implemented)
-  - Associate recordings with appointments (ensure recordings show in history)
+  - Delete appointment (implemented; cascades recordings/audio)
+  - Associate recordings with appointments (ensure recordings show in history; linkage consistent across edit/delete)
 
 - [ ] **APT-002**: Appointment queries
   - Get all appointments
@@ -349,8 +349,16 @@
   - Play audio controls ✅
   - Text-to-speech controls (inline, no dialog) ✅
   - Edit appointment option ✅
-  - Delete appointment option ✅
+  - Delete appointment option ✅ (cascades recordings/audio)
   - Share button
+
+- [ ] **UI-APT-004**: Calendar-first Home + Bottom Nav
+  - Bottom navigation with 3 tabs: Home/Calendar (default), History (timeline), Settings
+  - Calendar view highlighting appointment dates; selecting date filters list/card
+  - Next Appointment/Selected Day card with inline actions
+  - FAB “New Appointment” on Home/Calendar
+  - “Start Recording” surfaced when within configurable window of selected/upcoming appointment (use existing recording flow)
+  - Keep current EMA palette; mirror layout from provided mock (round cards, high contrast)
 
 - [ ] **UI-APT-004**: Calendar view
   - Month/year navigation

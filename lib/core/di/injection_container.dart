@@ -31,6 +31,7 @@ import '../../domain/usecases/appointments/get_upcoming_appointments.dart';
 import '../../domain/usecases/recordings/create_recording.dart';
 import '../../domain/usecases/recordings/get_recordings_by_appointment.dart';
 import '../../domain/usecases/recordings/update_recording.dart';
+import '../../domain/usecases/recordings/delete_recording.dart';
 import '../../domain/usecases/transcription/transcribe_audio.dart';
 import '../../domain/usecases/summarization/summarize_text.dart';
 import '../../domain/usecases/recordings/start_recording.dart';
@@ -180,6 +181,10 @@ Future<void> init() async {
   
   sl.registerLazySingleton<UpdateRecording>(
     () => UpdateRecording(sl<RecordingRepository>()),
+  );
+
+  sl.registerLazySingleton<DeleteRecording>(
+    () => DeleteRecording(sl<RecordingRepository>()),
   );
   
   // Register use cases - Transcription

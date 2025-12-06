@@ -216,8 +216,9 @@
 ### Phase 8: Appointment Management (in progress)
 1. Appointment CRUD with Hive (create/edit form added; delete implemented; finish validation + persistence polish)
 2. Appointment list/detail UI with associated recordings/transcriptions (detail has inline playback+TTS and delete; ensure linkage consistency + edit persist)
-3. Calendar integration (basic)
-4. Prepare for sharing/notifications (Phase 9/10)
+3. Calendar-first home redesign with bottom navigation (Home/Calendar, History, Settings) and FAB for add appointment (inspired by provided mock); keep current palette
+4. Calendar integration: highlight appointment dates, selected-day filter, next-appointment card, quick “Start Recording” near appointment time window
+5. Prepare for sharing/notifications (Phase 9/10)
 
 ---
 

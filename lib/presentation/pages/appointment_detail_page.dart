@@ -10,6 +10,7 @@ import '../../domain/entities/recording.dart';
 import '../../domain/usecases/appointments/get_appointment_by_id.dart';
 import '../../domain/usecases/appointments/delete_appointment.dart';
 import '../../domain/usecases/recordings/get_recordings_by_appointment.dart';
+import '../../domain/usecases/recordings/delete_recording.dart';
 import 'appointment_form_page.dart';
 import 'recording_page.dart';
 
@@ -116,6 +117,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
             onPressed: _appointment == null
                 ? null
                 : () async {
+                    final navigator = Navigator.of(context);
+                    final messenger = ScaffoldMessenger.of(context);
                     final confirmed = await showDialog<bool>(
                       context: context,
                       builder: (ctx) => AlertDialog(
@@ -134,15 +137,24 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                       ),
                     );
                     if (confirmed == true) {
+                      if (!mounted) return;
                       final delete = di.sl<DeleteAppointment>();
+                      final deleteRecording = di.sl<DeleteRecording>();
                       final result = await delete(DeleteAppointmentParams(_appointment!.id));
                       if (!mounted) return;
                       result.fold(
-                        onSuccess: (_) {
-                          Navigator.of(context).pop(true);
+                        onSuccess: (_) async {
+                          // Cascade delete recordings and audio files for this appointment
+                          for (final rec in _recordings) {
+                            await deleteRecording(DeleteRecordingParams(rec.id));
+                            try {
+                              await FileStorage.deleteAudioFile(rec.audioFilePath);
+                            } catch (_) {}
+                          }
+                          navigator.pop(true);
                         },
                         onError: (failure) {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          messenger.showSnackBar(
                             SnackBar(content: Text('Delete failed: ${failure.message}')),
                           );
                         },

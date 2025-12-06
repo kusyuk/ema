@@ -131,7 +131,7 @@ EMA is a Flutter mobile application designed to assist elderly patients during m
 - **FR-5.2**: Implement data encryption for sensitive information
 - **Priority**: P0 (Critical)
 
-### 3.2 Appointment Management Module
+### 3.2 Appointment Management Module (calendar-first home + bottom navigation)
 
 #### FR-6: Appointment Creation
 - **FR-6.1**: Create new appointment with fields:
@@ -143,10 +143,11 @@ EMA is a Flutter mobile application designed to assist elderly patients during m
   - Location/address (implemented)
 - **FR-6.2**: Associate recording with appointment (partial: linked on recording stop; ensure full CRUD linkage)
 - **FR-6.3**: Link multiple recordings to single appointment
+- **FR-6.4**: Add Appointment via FAB on Home/Calendar tab (calendar-first flow)
 - **Priority**: P0 (Critical)
 
 #### FR-7: Appointment History
-- **FR-7.1**: Display all appointments in timeline view
+- **FR-7.1**: Display all appointments in timeline view (History tab)
 - **FR-7.2**: Sort by date (newest/oldest first)
 - **FR-7.3**: Filter by doctor, hospital, or date range
 - **FR-7.4**: Show appointment status (upcoming/past)
@@ -159,10 +160,11 @@ EMA is a Flutter mobile application designed to assist elderly patients during m
 - **FR-8.4**: Option to re-generate summary
 - **Priority**: P0 (Critical)
 
-#### FR-9: Calendar Integration
-- **FR-9.1**: Display appointments in calendar view
+#### FR-9: Calendar Integration (Home/Calendar tab)
+- **FR-9.1**: Display appointments in calendar view (default landing)
 - **FR-9.2**: Navigate by month/year
-- **FR-9.3**: Highlight dates with appointments
+- **FR-9.3**: Highlight dates with appointments; selecting a date filters the list/card below
+- **FR-9.4**: “Start Recording” surfaced when within a configurable window of a selected/upcoming appointment
 - **Priority**: P1 (High)
 
 #### FR-10: Appointment Reminders
@@ -186,7 +188,7 @@ EMA is a Flutter mobile application designed to assist elderly patients during m
   - Option to include audio file
 - **Priority**: P1 (High)
 
-### 3.4 User Interface Requirements
+### 3.4 User Interface Requirements (palette unchanged, layout inspired by provided mock)
 
 #### FR-12: Accessibility
 - **FR-12.1**: Minimum font size: 16-18pt (configurable up to 24pt)
