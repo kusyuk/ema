@@ -76,18 +76,19 @@
 #### Completed Tasks:
 - ✅ API client with comprehensive error handling
 - ✅ Groq API integration for summarization
-- ✅ ElevenLabs API integration for transcription
+- ✅ Groq API integration for transcription (migrated from ElevenLabs)
 - ✅ API key management via environment variables
 - ✅ Error handling for all API scenarios
 
 **Key Files Created**:
-- `lib/data/datasources/groq_remote_data_source.dart`
-- `lib/data/datasources/elevenlabs_remote_data_source.dart`
+- `lib/data/datasources/groq_remote_data_source.dart` (summarization)
+- `lib/data/datasources/groq_transcription_remote_data_source.dart` (transcription)
 - `lib/core/network/api_client.dart`
 
 **API Integrations**:
-- **Groq**: LLM summarization with layman's terms prompt
-- **ElevenLabs**: Speech-to-text transcription
+- **Groq**: LLM summarization with layman's terms prompt (llama-3.3-70b-versatile)
+- **Groq**: Speech-to-text transcription (whisper-large-v3)
+- ~~**ElevenLabs**: Speech-to-text transcription~~ (DEPRECATED - Migrated to Groq)
 
 ---
 

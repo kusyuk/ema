@@ -53,10 +53,15 @@ class FileStorage {
   }
 
   /// Get audio file
-  static File getAudioFile(String fileName) {
-    final file = File(getAudioFilePath(fileName));
+  /// Accepts either a filename (e.g., "recording_123.m4a") or a full path
+  static File getAudioFile(String fileNameOrPath) {
+    // Check if it's already a full path (contains directory separators)
+    final file = fileNameOrPath.contains('/') || fileNameOrPath.contains('\\')
+        ? File(fileNameOrPath)
+        : File(getAudioFilePath(fileNameOrPath));
+    
     if (!file.existsSync()) {
-      throw CacheException('Audio file not found: $fileName');
+      throw CacheException('Audio file not found: $fileNameOrPath');
     }
     return file;
   }

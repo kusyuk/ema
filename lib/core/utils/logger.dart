@@ -13,6 +13,8 @@ class Logger {
   }
 
   static void info(String message, {String? tag}) {
+    // Also print to console for immediate visibility
+    print('[INFO] ${tag ?? 'EMA'}: $message');
     developer.log(
       message,
       name: tag ?? 'EMA',
@@ -21,6 +23,8 @@ class Logger {
   }
 
   static void warning(String message, {String? tag}) {
+    // Also print to console for immediate visibility
+    print('[WARNING] ${tag ?? 'EMA'}: $message');
     developer.log(
       message,
       name: tag ?? 'EMA',
@@ -34,6 +38,14 @@ class Logger {
     Object? error,
     StackTrace? stackTrace,
   }) {
+    // Also print to console for immediate visibility
+    print('[ERROR] ${tag ?? 'EMA'}: $message');
+    if (error != null) {
+      print('[ERROR] Exception: $error');
+    }
+    if (stackTrace != null) {
+      print('[ERROR] StackTrace: $stackTrace');
+    }
     developer.log(
       message,
       name: tag ?? 'EMA',

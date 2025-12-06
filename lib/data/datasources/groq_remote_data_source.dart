@@ -2,6 +2,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/constants/env_constants.dart';
 import '../../core/errors/exceptions.dart';
 import '../../core/network/api_client.dart';
+import '../../core/utils/logger.dart';
 import '../utils/typedefs.dart';
 
 /// Remote data source for Groq API
@@ -18,18 +19,26 @@ class GroqRemoteDataSourceImpl implements GroqRemoteDataSource {
   @override
   Future<String> summarizeText(String text, {String language = 'en'}) async {
     try {
+      Logger.info('Starting summarization for text (${text.length} chars)');
+      
       final apiKey = EnvConstants.groqApiKey;
+      Logger.info('Groq API key check: ${apiKey.isEmpty ? "MISSING" : "PRESENT (${apiKey.length} chars)"}');
       if (apiKey.isEmpty) {
+        Logger.error('Groq API key not configured');
         throw const SummarizationException('Groq API key not configured');
       }
 
       // Create a prompt for summarization in layman's terms
       final prompt = _createSummarizationPrompt(text, language);
+      Logger.info('Created summarization prompt (${prompt.length} chars)');
 
+      Logger.info('Making API request to Groq chat/completions endpoint');
+      Logger.info('Using model: llama-3.3-70b-versatile');
+      
       final response = await _apiClient.post<JsonMap>(
         '${AppConstants.groqBaseUrl}/chat/completions',
         data: {
-          'model': 'llama-3.1-70b-versatile', // Using a powerful model
+          'model': 'llama-3.3-70b-versatile', // Updated to current model (llama-3.1-70b-versatile was decommissioned)
           'messages': [
             {
               'role': 'system',
@@ -51,15 +60,25 @@ class GroqRemoteDataSourceImpl implements GroqRemoteDataSource {
         ),
       );
 
+      Logger.info('API request completed successfully');
+      Logger.info('Response status code: ${response.statusCode}');
+      
       final content = response.data?['choices']?[0]?['message']?['content'] as String?;
+      Logger.info('Summary extracted: ${content != null ? "PRESENT (${content.length} chars)" : "NULL"}');
+      
       if (content == null || content.isEmpty) {
+        Logger.error('Empty response from Groq API');
+        Logger.error('Full response: ${response.data}');
         throw const SummarizationException('Empty response from Groq API');
       }
 
+      Logger.info('Summarization completed successfully: ${content.length} characters');
       return content.trim();
-    } on AppException {
+    } on AppException catch (e) {
+      Logger.error('Summarization failed with AppException', error: e);
       rethrow;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      Logger.error('Summarization failed with unexpected error', error: e, stackTrace: stackTrace);
       throw SummarizationException('Failed to summarize text: ${e.toString()}');
     }
   }

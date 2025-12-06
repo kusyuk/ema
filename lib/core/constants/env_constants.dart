@@ -6,7 +6,8 @@ class EnvConstants {
   EnvConstants._();
 
   static String get groqApiKey => dotenv.env['GROQ_API_KEY'] ?? '';
-  static String get elevenlabsApiKey => dotenv.env['ELEVENLABS_API_KEY'] ?? '';
+  // Deprecated: ElevenLabs no longer used (migrated to Groq)
+  // static String get elevenlabsApiKey => dotenv.env['ELEVENLABS_API_KEY'] ?? '';
   
   /// Load environment variables
   static Future<void> load() async {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:record/record.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../constants/app_constants.dart';
@@ -84,12 +85,16 @@ class AudioRecorderService {
       final fileName = 'recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
       final filePath = FileStorage.getAudioFilePath(fileName);
 
-      // Configure recording settings
+      // Configure recording settings with optimized values for quota reduction
+      // Lower sample rate (16kHz) and bitrate (64kbps) reduce file size significantly
+      // while maintaining sufficient quality for speech transcription
       const config = RecordConfig(
         encoder: AudioEncoder.aacLc,
-        bitRate: AppConstants.defaultBitRate,
-        sampleRate: AppConstants.defaultSampleRate,
+        bitRate: AppConstants.optimizedBitRate,
+        sampleRate: AppConstants.optimizedSampleRate,
       );
+      
+      Logger.info('Recording configured with optimized settings: ${AppConstants.optimizedSampleRate}Hz, ${AppConstants.optimizedBitRate}bps');
 
       // Start recording
       await _recorder.start(
@@ -121,11 +126,34 @@ class AudioRecorderService {
       _stopDurationTimer();
       
       final savedPath = _currentRecordingPath;
+      
+      // Verify the file exists at the expected path
+      if (savedPath != null) {
+        final file = File(savedPath);
+        if (await file.exists()) {
+          final fileSize = await file.length();
+          Logger.info('Recording stopped successfully: $savedPath (file exists, ${(fileSize / 1024).toStringAsFixed(2)} KB)');
+        } else {
+          Logger.warning('Recording stopped but file not found at expected path: $savedPath');
+          // Try using the path returned by recorder.stop() if different and not null
+          if (path != null && path != savedPath) {
+            final returnedFile = File(path);
+            if (await returnedFile.exists()) {
+              Logger.info('Using path returned by recorder: $path');
+              _currentRecordingPath = null;
+              _currentDuration = Duration.zero;
+              return path;
+            }
+          }
+        }
+      }
+      
       _currentRecordingPath = null;
       _currentDuration = Duration.zero;
 
-      Logger.info('Recording stopped: $path');
-      return savedPath;
+      final finalPath = savedPath ?? path;
+      Logger.info('Recording stopped: $finalPath');
+      return finalPath;
     } catch (e) {
       Logger.error('Failed to stop recording', error: e);
       _stopDurationTimer();
@@ -201,6 +229,12 @@ class AudioRecorderService {
     _durationTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _currentDuration = _currentDuration + const Duration(seconds: 1);
       _durationController.add(_currentDuration);
+      
+      // Auto-stop at maximum duration to prevent excessive quota usage
+      if (_currentDuration >= AppConstants.maxRecordingDuration) {
+        Logger.warning('Maximum recording duration reached (${AppConstants.maxRecordingDuration.inMinutes} minutes). Auto-stopping.');
+        stopRecording();
+      }
     });
   }
 

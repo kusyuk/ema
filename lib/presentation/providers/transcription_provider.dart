@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/utils/result.dart';
+import '../../core/utils/logger.dart';
 import '../../core/errors/failures.dart';
 import '../../domain/usecases/transcription/transcribe_audio.dart';
 import '../../domain/usecases/summarization/summarize_text.dart';
@@ -40,33 +41,50 @@ class TranscriptionProvider extends ChangeNotifier {
 
   /// Transcribe audio file
   Future<void> transcribeAudio(String audioFilePath) async {
+    Logger.info('TranscriptionProvider: Starting transcription for: $audioFilePath');
     _isTranscribing = true;
     _transcriptionError = null;
     _transcription = null;
     _transcriptionProgress = 0.0;
     notifyListeners();
 
-    final result = await _transcribeAudio(
-      TranscribeAudioParams(audioFilePath),
-    );
+    try {
+      Logger.info('TranscriptionProvider: Calling TranscribeAudio use case...');
+      final result = await _transcribeAudio(
+        TranscribeAudioParams(audioFilePath),
+      );
 
-    result.fold(
-      onSuccess: (transcription) {
-        _transcription = transcription;
-        _isTranscribing = false;
-        _transcriptionProgress = 1.0;
-        notifyListeners();
-        
-        // Automatically start summarization
-        summarizeTranscription();
-      },
-      onError: (failure) {
-        _transcriptionError = failure.message;
-        _isTranscribing = false;
-        _transcriptionProgress = null;
-        notifyListeners();
-      },
-    );
+      result.fold(
+        onSuccess: (transcription) {
+          Logger.info('TranscriptionProvider: Transcription successful (${transcription.length} chars)');
+          _transcription = transcription;
+          _isTranscribing = false;
+          _transcriptionProgress = 1.0;
+          notifyListeners();
+          
+          // Automatically start summarization
+          Logger.info('TranscriptionProvider: Starting automatic summarization...');
+          summarizeTranscription();
+        },
+        onError: (failure) {
+          Logger.error('TranscriptionProvider: Transcription failed', error: failure);
+          Logger.error('TranscriptionProvider: Failure type: ${failure.runtimeType}');
+          Logger.error('TranscriptionProvider: Failure message: ${failure.message}');
+          _transcriptionError = failure.message.isNotEmpty 
+              ? failure.message 
+              : 'An error occurred during transcription. Please check logs for details.';
+          _isTranscribing = false;
+          _transcriptionProgress = null;
+          notifyListeners();
+        },
+      );
+    } catch (e, stackTrace) {
+      Logger.error('TranscriptionProvider: Unexpected error during transcription', error: e, stackTrace: stackTrace);
+      _transcriptionError = 'Unexpected error: ${e.toString()}';
+      _isTranscribing = false;
+      _transcriptionProgress = null;
+      notifyListeners();
+    }
   }
 
   /// Summarize transcription

@@ -11,7 +11,7 @@ import '../services/audio_player_service.dart';
 import '../../data/datasources/appointment_local_data_source.dart';
 import '../../data/datasources/recording_local_data_source.dart';
 import '../../data/datasources/groq_remote_data_source.dart';
-import '../../data/datasources/elevenlabs_remote_data_source.dart';
+import '../../data/datasources/groq_transcription_remote_data_source.dart';
 import '../../domain/repositories/appointment_repository.dart';
 import '../../domain/repositories/recording_repository.dart';
 import '../../domain/repositories/transcription_repository.dart';
@@ -109,8 +109,8 @@ Future<void> init() async {
     () => GroqRemoteDataSourceImpl(sl<ApiClient>()),
   );
   
-  sl.registerLazySingleton<ElevenLabsRemoteDataSource>(
-    () => ElevenLabsRemoteDataSourceImpl(sl<ApiClient>()),
+  sl.registerLazySingleton<GroqTranscriptionRemoteDataSource>(
+    () => GroqTranscriptionRemoteDataSourceImpl(sl<ApiClient>()),
   );
   
   // Register repositories
@@ -123,7 +123,7 @@ Future<void> init() async {
   );
   
   sl.registerLazySingleton<TranscriptionRepository>(
-    () => TranscriptionRepositoryImpl(sl<ElevenLabsRemoteDataSource>()),
+    () => TranscriptionRepositoryImpl(sl<GroqTranscriptionRemoteDataSource>()),
   );
   
   sl.registerLazySingleton<SummarizationRepository>(

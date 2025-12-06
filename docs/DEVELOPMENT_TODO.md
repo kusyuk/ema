@@ -20,7 +20,7 @@
 - [x] **SETUP-002**: Add core dependencies to `pubspec.yaml` ✅
   - `hive` and `hive_flutter` for local database
   - `flutter_tts` for text-to-speech
-  - `elevenlabs_flutter_updated` for speech-to-text
+  - ~~`elevenlabs_flutter_updated` for speech-to-text~~ (DEPRECATED - Migrated to Groq)
   - `permission_handler` for audio permissions
   - `path_provider` for file system access
   - `dio` for API calls
@@ -114,7 +114,8 @@
 #### 3.1 API Service Setup
 - [x] **API-001**: Configure API clients ✅
   - Set up Groq API client (`GroqRemoteDataSource`)
-  - Set up ElevenLabs API client (`ElevenLabsRemoteDataSource`)
+  - ~~Set up ElevenLabs API client~~ (DEPRECATED - Migrated to Groq)
+  - Set up Groq transcription API client (`GroqTranscriptionRemoteDataSource`)
   - Implement API key management (secure storage via `.env`)
   - Created API configuration classes (`ApiClient`)
 
@@ -125,13 +126,14 @@
   - Added request/response logging
   - Retry logic (handled by ApiClient)
 
-- [x] **API-003**: Implement ElevenLabs integration ✅
-  - Created `ElevenLabsRemoteDataSourceImpl` class
-  - Implemented speech-to-text API call
+- [x] **API-003**: Implement Groq transcription integration ✅ (Migrated from ElevenLabs)
+  - Created `GroqTranscriptionRemoteDataSourceImpl` class
+  - Implemented speech-to-text API call using Whisper models
   - Handle audio file upload (multipart form data)
   - Process transcription response
-  - Added progress tracking support
+  - Added comprehensive logging
   - Retry logic (handled by ApiClient)
+  - ~~`ElevenLabsRemoteDataSourceImpl`~~ (DEPRECATED - kept as backup)
 
 - [x] **API-004**: API error handling ✅
   - Handle network failures (NetworkException)
@@ -241,7 +243,7 @@
 
 #### 6.1 Transcription Flow
 - [x] **TRANS-001**: Transcription service integration ✅
-  - Upload audio to ElevenLabs (ElevenLabsRemoteDataSource)
+  - Upload audio to Groq (GroqTranscriptionRemoteDataSource) (Migrated from ElevenLabs)
   - Handle transcription completion
   - Save transcription to database (via RecordingRepository)
   - Error handling implemented

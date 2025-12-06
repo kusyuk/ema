@@ -93,7 +93,7 @@ EMA is a Flutter mobile application designed to assist elderly patients during m
 - **Priority**: P0 (Critical)
 
 #### FR-2: Speech-to-Text Transcription
-- **FR-2.1**: Transcribe recorded audio using ElevenLabs API
+- **FR-2.1**: Transcribe recorded audio using Groq API (Whisper models)
 - **FR-2.2**: Display transcription in real-time or post-recording
 - **FR-2.3**: Support multiple languages for transcription
 - **FR-2.4**: Handle transcription errors gracefully with retry mechanism

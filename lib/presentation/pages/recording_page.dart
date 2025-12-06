@@ -132,9 +132,9 @@ class _RecordingPageState extends State<RecordingPage> {
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              child: Text(
+              child: const Text(
                 'Grant Permission',
-                style: const TextStyle(fontSize: AppConstants.defaultFontSize),
+                style: TextStyle(fontSize: AppConstants.defaultFontSize),
               ),
             ),
           ),
@@ -181,6 +181,45 @@ class _RecordingPageState extends State<RecordingPage> {
               fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
+          
+          // Duration warning when approaching limit
+          if (provider.isRecording && provider.duration >= AppConstants.recordingWarningThreshold)
+            Container(
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.only(top: 16),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange, width: 1),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Recording limit approaching (${AppConstants.maxRecordingDuration.inMinutes} min max)',
+                    style: TextStyle(
+                      fontSize: AppConstants.defaultFontSize - 2,
+                      color: Colors.orange[900],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          
+          // Estimated credit cost (rough estimate: ~1 credit per 15-20 seconds)
+          if (provider.isRecording && provider.duration.inSeconds > 0)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'Est. credits: ~${_estimateCredits(provider.duration)}',
+                style: TextStyle(
+                  fontSize: AppConstants.defaultFontSize - 4,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ),
           
           const SizedBox(height: 48),
           
@@ -320,10 +359,11 @@ class _RecordingPageState extends State<RecordingPage> {
             createResult.fold(
               onSuccess: (recording) {
                 // Navigate to transcription page
+                // Pass only the filename, not the full path
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (context) => TranscriptionPage(
-                      audioFilePath: filePath,
+                      audioFilePath: fileName,
                       appointmentId: widget.appointmentId,
                       recordingId: recording.id,
                     ),
@@ -357,6 +397,14 @@ class _RecordingPageState extends State<RecordingPage> {
     final minutes = duration.inMinutes.toString().padLeft(2, '0');
     final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
     return '$minutes:$seconds';
+  }
+
+  /// Estimate credit cost based on recording duration
+  /// Rough estimate: ~1 credit per 15-20 seconds of audio with optimized settings
+  int _estimateCredits(Duration duration) {
+    // With optimized settings (16kHz, 64kbps), estimate ~1 credit per 15 seconds
+    final estimatedCredits = (duration.inSeconds / 15).ceil();
+    return estimatedCredits.clamp(1, 10); // Cap at 10 for display
   }
 }
 
