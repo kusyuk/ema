@@ -3,7 +3,7 @@
 
 ### Project Status: Development In Progress
 ### Last Updated: 2025
-### Current Phase: Phase 4 - Domain Layer & Use Cases
+### Current Phase: Phase 7 - Text-to-Speech Feature
 
 ---
 
@@ -276,25 +276,31 @@
 ### Phase 7: Text-to-Speech Feature (Week 7)
 
 #### 7.1 TTS Implementation
-- [ ] **TTS-001**: Integrate flutter_tts
+- [x] **TTS-001**: Integrate flutter_tts ✅
   - Initialize TTS engine
-  - Configure language support
+  - Configure language support (initial set)
   - Implement speak functionality
   - Handle TTS errors
-  - Support multiple languages
+  - (Optional) Broaden language list
 
-- [ ] **TTS-002**: TTS Controls
+- [x] **TTS-002**: TTS Controls ✅
   - Play/pause/stop functionality
   - Speed adjustment
   - Language selection
-  - Volume control (if needed)
+  - Pitch adjustment
+  - Volume control (optional)
 
-- [ ] **TTS-003**: TTS UI
+- [x] **TTS-003**: TTS UI ✅
   - TTS control buttons
   - Speed selector
   - Language selector
-  - Text highlighting during speech (if possible)
-  - Progress indicator
+  - Pitch selector
+  - (Optional) Text highlighting / progress indicator
+
+#### 7.2 TTS Polish (Remaining)
+- [ ] **TTS-004**: Persist TTS settings (language/rate/pitch)
+- [ ] **TTS-005**: Expand language list (as needed)
+- [ ] **TTS-006**: Refine UX defaults and accessibility cues
 
 ---
 

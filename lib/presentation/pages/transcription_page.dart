@@ -6,7 +6,13 @@ import '../../core/utils/result.dart';
 import '../../domain/usecases/transcription/transcribe_audio.dart';
 import '../../domain/usecases/summarization/summarize_text.dart';
 import '../../domain/usecases/recordings/save_transcription_and_summary.dart';
+import '../../domain/usecases/tts/speak_text.dart';
+import '../../domain/usecases/tts/stop_speaking.dart';
+import '../../domain/usecases/tts/pause_speaking.dart';
+import '../../domain/usecases/tts/load_tts_settings.dart';
+import '../../domain/usecases/tts/save_tts_settings.dart';
 import '../providers/transcription_provider.dart';
+import '../widgets/labeled_slider.dart';
 
 /// Transcription page for processing audio and generating summaries
 class TranscriptionPage extends StatefulWidget {
@@ -39,6 +45,11 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         transcribeAudio: di.sl<TranscribeAudio>(),
         summarizeText: di.sl<SummarizeText>(),
         saveTranscriptionAndSummary: di.sl<SaveTranscriptionAndSummary>(),
+        speakText: di.sl<SpeakText>(),
+        stopSpeaking: di.sl<StopSpeaking>(),
+        pauseSpeaking: di.sl<PauseSpeaking>(),
+        loadTtsSettings: di.sl<LoadTtsSettings>(),
+        saveTtsSettings: di.sl<SaveTtsSettings>(),
         recordingId: widget.recordingId,
       ),
       child: Scaffold(
@@ -56,6 +67,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               if (!_hasInitialized) {
                 _hasInitialized = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
+                  provider.loadTtsSettings();
                   _startTranscription(provider);
                 });
               }
@@ -312,6 +324,91 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               ),
             ),
           ),
+          const SizedBox(height: 16),
+
+          // TTS Controls
+          Text(
+            'Listen to Summary',
+            style: TextStyle(
+              fontSize: AppConstants.defaultFontSize + 2,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: provider.summary == null
+                      ? null
+                      : () => provider.speakSummary(),
+                  icon: const Icon(Icons.volume_up),
+                  label: const Text(
+                    'Play Summary',
+                    style: TextStyle(fontSize: AppConstants.defaultFontSize),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              IconButton(
+                tooltip: 'Pause',
+                onPressed: provider.isSpeaking ? () => provider.pauseSpeaking() : null,
+                icon: const Icon(Icons.pause),
+              ),
+              IconButton(
+                tooltip: 'Stop',
+                onPressed: provider.isSpeaking ? () => provider.stopSpeaking() : null,
+                icon: const Icon(Icons.stop),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 8),
+          DropdownButtonFormField<String>(
+            value: provider.ttsLanguage,
+            decoration: const InputDecoration(
+              labelText: 'Language',
+            ),
+            items: const [
+              DropdownMenuItem(value: 'en-US', child: Text('English (US)')),
+              DropdownMenuItem(value: 'en-GB', child: Text('English (UK)')),
+              DropdownMenuItem(value: 'es-ES', child: Text('Spanish')),
+              DropdownMenuItem(value: 'fr-FR', child: Text('French')),
+            ],
+            onChanged: (value) {
+              if (value != null) provider.setTtsLanguage(value);
+            },
+          ),
+
+          const SizedBox(height: 12),
+          LabeledSlider(
+            label: 'Speech Rate',
+            value: provider.ttsRate,
+            min: 0.5,
+            max: 1.5,
+            onChanged: (v) => provider.setTtsRate(v),
+          ),
+
+          const SizedBox(height: 12),
+          LabeledSlider(
+            label: 'Pitch',
+            value: provider.ttsPitch,
+            min: 0.5,
+            max: 2.0,
+            onChanged: (v) => provider.setTtsPitch(v),
+          ),
+
+          if (provider.ttsError != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              provider.ttsError!,
+              style: TextStyle(
+                color: Colors.red[700],
+                fontSize: AppConstants.defaultFontSize - 2,
+              ),
+            ),
+          ],
+          
           const SizedBox(height: 32),
           
           // Regenerate Summary Button

@@ -8,6 +8,8 @@ import '../utils/file_storage.dart';
 import '../utils/logger.dart';
 import '../services/audio_recorder_service.dart';
 import '../services/audio_player_service.dart';
+import '../services/tts_service.dart';
+import '../services/tts_settings_service.dart';
 import '../../data/datasources/appointment_local_data_source.dart';
 import '../../data/datasources/recording_local_data_source.dart';
 import '../../data/datasources/groq_remote_data_source.dart';
@@ -38,6 +40,11 @@ import '../../domain/usecases/recordings/resume_recording.dart';
 import '../../domain/usecases/recordings/check_recording_permission.dart';
 import '../../domain/usecases/recordings/request_recording_permission.dart';
 import '../../domain/usecases/recordings/save_transcription_and_summary.dart';
+import '../../domain/usecases/tts/speak_text.dart';
+import '../../domain/usecases/tts/stop_speaking.dart';
+import '../../domain/usecases/tts/pause_speaking.dart';
+import '../../domain/usecases/tts/load_tts_settings.dart';
+import '../../domain/usecases/tts/save_tts_settings.dart';
 
 /// Service locator instance
 final sl = GetIt.instance;
@@ -87,6 +94,14 @@ Future<void> init() async {
   
   sl.registerLazySingleton<AudioPlayerService>(
     () => AudioPlayerService(),
+  );
+
+  sl.registerLazySingleton<TtsService>(
+    () => TtsService(),
+  );
+
+  sl.registerLazySingleton<TtsSettingsService>(
+    () => TtsSettingsService(sl<Box<dynamic>>()),
   );
   
   // Register Hive box
@@ -205,6 +220,27 @@ Future<void> init() async {
   
   sl.registerLazySingleton<SaveTranscriptionAndSummary>(
     () => SaveTranscriptionAndSummary(sl<RecordingRepository>()),
+  );
+
+  // Register use cases - TTS
+  sl.registerLazySingleton<SpeakText>(
+    () => SpeakText(sl<TtsService>()),
+  );
+
+  sl.registerLazySingleton<StopSpeaking>(
+    () => StopSpeaking(sl<TtsService>()),
+  );
+
+  sl.registerLazySingleton<PauseSpeaking>(
+    () => PauseSpeaking(sl<TtsService>()),
+  );
+
+  sl.registerLazySingleton<LoadTtsSettings>(
+    () => LoadTtsSettings(sl<TtsSettingsService>()),
+  );
+
+  sl.registerLazySingleton<SaveTtsSettings>(
+    () => SaveTtsSettings(sl<TtsSettingsService>()),
   );
     
     Logger.info('Dependency injection initialization completed successfully');

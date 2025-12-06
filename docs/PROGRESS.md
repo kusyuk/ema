@@ -8,8 +8,8 @@
 ## Overall Progress
 
 **Status**: Development In Progress  
-**Current Phase**: Phase 7 - Text-to-Speech Feature (Ready to Start)  
-**Completion**: ~45% of MVP features  
+**Current Phase**: Phase 7 - Text-to-Speech Feature (In Progress)  
+**Completion**: ~55% of MVP features  
 **App Status**: ✅ Running Successfully (Initialization issues resolved)
 
 ---
@@ -94,15 +94,20 @@
 
 ## Current Phase
 
-### 🔄 Phase 7: Text-to-Speech Feature (READY TO START)
+### 🔄 Phase 7: Text-to-Speech Feature (IN PROGRESS)
 
-**Status**: 0% Complete
+**Status**: ~30% Complete
+
+#### Completed:
+- ✅ Created TTS service (`TtsService`) using flutter_tts
+- ✅ Added TTS use cases (speak, stop, pause)
+- ✅ Wired TTS into DI and provider
+- ✅ Added Play/Pause/Stop controls and basic language/rate/pitch selectors on TranscriptionPage
 
 #### Next Steps:
-- [ ] Integrate flutter_tts
-- [ ] Create TTS service
-- [ ] Implement TTS UI
-- [ ] Add TTS controls
+- [ ] Polish TTS UI/UX and defaults
+- [ ] Add settings persistence (optional)
+- [ ] Broaden language list (optional)
 
 ---
 
@@ -173,8 +178,7 @@
 - ✅ Data models with JSON serialization
 
 ### API Integration
-- ✅ Groq API integrated
-- ✅ ElevenLabs API integrated
+- ✅ Groq API integrated (LLM + STT)
 - ✅ Comprehensive error handling
 
 ### Audio Services
@@ -203,17 +207,15 @@
 
 ## Next Steps
 
-### Immediate (Phase 6):
-1. Create transcription UI with progress indicator
-2. Create summarization UI with key information display
-3. Integrate transcription and summarization flow
-4. Add error handling and retry mechanisms
+### Phase 7 (TTS) polish
+1. Refine TTS UI/UX defaults
+2. (Optional) Persist TTS settings (language/rate/pitch)
+3. (Optional) Broaden language list
 
-### Upcoming (Phase 7-8):
-1. Text-to-speech integration
-2. Appointment management UI
-3. Calendar integration
-4. Sharing functionality
+### Phase 8 (Upcoming)
+1. Appointment management UI polish
+2. Calendar integration
+3. Sharing & notifications (Phase 9/10)
 
 ---
 
