@@ -215,15 +215,6 @@ class CalendarHomePageState extends State<CalendarHomePage> {
             child: Column(
               children: [
                 const SizedBox(height: 8),
-                Text(
-                  _monthYearLabel(_focusedDay),
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.primaryLight,
-                  ),
-                ),
-                const SizedBox(height: 12),
                 Card(
                   color: AppTheme.surfaceLight,
                   shape: RoundedRectangleBorder(
@@ -294,24 +285,6 @@ class CalendarHomePageState extends State<CalendarHomePage> {
         ],
       ),
     );
-  }
-
-  String _monthYearLabel(DateTime date) {
-    final months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    return '${months[date.month - 1]} ${date.year}';
   }
 
   Widget _buildSelectedDayCard(
