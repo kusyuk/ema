@@ -28,7 +28,6 @@ class GroqRemoteDataSourceImpl implements GroqRemoteDataSource {
         throw const SummarizationException('Groq API key not configured');
       }
 
-      // Create a prompt for summarization in layman's terms
       final prompt = _createSummarizationPrompt(text, language);
       Logger.info('Created summarization prompt (${prompt.length} chars)');
 
@@ -42,7 +41,7 @@ class GroqRemoteDataSourceImpl implements GroqRemoteDataSource {
           'messages': [
             {
               'role': 'system',
-              'content': 'You are a helpful medical assistant that explains medical information in simple, easy-to-understand language for elderly patients. Always use layman\'s terms and avoid technical jargon.',
+              'content': _buildSystemPrompt(language),
             },
             {
               'role': 'user',
@@ -83,24 +82,50 @@ class GroqRemoteDataSourceImpl implements GroqRemoteDataSource {
     }
   }
 
+  /// Build the strict system prompt
+  String _buildSystemPrompt(String language) {
+    final languageTag = language.isNotEmpty ? language : 'en';
+    return '''
+You are an expert Health Summary Assistant designed for patients with low health literacy, especially elderly users. The summary must be empathetic, reassuring, positive, and strictly non-technical. Use a kind, supportive tone. Write the final summary at a Grade 4 (Primary School) reading level. Avoid all medical jargon. If a medical term must be used, follow it immediately with a simple explanation in parentheses. The entire response MUST be in [$languageTag].''';
+  }
+
   /// Create a prompt for summarization
   String _createSummarizationPrompt(String text, String language) {
-    final languageInstruction = language != 'en' 
-        ? ' Please respond in $language.'
-        : '';
-    
-    return '''Please summarize the following medical consultation transcript in simple, easy-to-understand language for an elderly patient. 
+    final languageTag = language.isNotEmpty ? language : 'en';
+    return '''
+SYSTEM PROMPT:
 
-Focus on:
-1. The main diagnosis or condition (in simple terms)
-2. Treatment plan or recommendations
-3. Any medications mentioned
-4. Follow-up instructions or next steps
-5. Important dates or appointments mentioned
+You are an expert Health Summary Assistant designed for patients with low health literacy, especially elderly users. The summary must be empathetic, reassuring, positive, and strictly non-technical. Use a kind, supportive tone. Write the final summary at a Grade 4 (Primary School) reading level. Avoid all medical jargon. If a medical term must be used, follow it immediately with a simple explanation in parentheses. The entire response MUST be in [$languageTag].
 
-Use everyday language and avoid medical jargon. If you must use a medical term, explain it in simple words.$languageInstruction
+INSTRUCTIONS:
 
-Transcript:
-$text''';
+Your task is to summarize the following medical consultation transcript. You must extract and output the information using the three specific sections below. DO NOT include any introductions, conclusions, or conversational fluff. ONLY output the content for the three structured sections.
+
+TRANSCRIPT:
+
+<<< $text >>>
+
+OUTPUT FORMAT:
+
+## 1. My Visit Today (What Happened?)
+
+* In 1-2 simple sentences, summarize the main problem or reason for the visit.
+* Identify the confirmed or suspected diagnosis (use simple language).
+
+## 2. My Action Plan (What Do I Need to Do?)
+
+* Create a numbered list of **3 to 5 clear, immediate steps** the patient must take.
+    1.  [Example: Take this new pill once a day.]
+    2.  [Example: Walk for 10 minutes every day.]
+    3.  [Example: Finish all the antibiotics.]
+
+## 3. Next Appointment (When Do I Come Back?)
+
+* Extract the exact date and time mentioned by the doctor. If not mentioned, state: "Please call the clinic to book your next visit."
+* Extract the reason for the next visit (e.g., Blood test review).
+
+END RESPONSE:
+
+***''';
   }
 }
