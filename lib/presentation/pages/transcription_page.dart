@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/di/injection_container.dart' as di;
+import '../../core/services/audio_player_service.dart';
+import '../../core/utils/file_storage.dart';
 import '../../core/utils/result.dart';
 import '../../domain/usecases/transcription/transcribe_audio.dart';
 import '../../domain/usecases/summarization/summarize_text.dart';
@@ -33,9 +35,27 @@ class TranscriptionPage extends StatefulWidget {
 
 class _TranscriptionPageState extends State<TranscriptionPage> {
   bool _hasInitialized = false;
+  final AudioPlayerService _player = di.sl<AudioPlayerService>();
+  bool _audioLoading = true;
+  String? _audioError;
 
   void _startTranscription(TranscriptionProvider provider) {
     provider.transcribeAudio(widget.audioFilePath);
+  }
+
+  Future<void> _initAudio() async {
+    try {
+      final file = FileStorage.getAudioFile(widget.audioFilePath);
+      await _player.loadAudio(file.path);
+      setState(() {
+        _audioLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _audioError = 'Failed to load audio';
+        _audioLoading = false;
+      });
+    }
   }
 
   @override
@@ -66,6 +86,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               if (!_hasInitialized) {
                 _hasInitialized = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _initAudio();
                   provider.loadTtsSettings();
                   _startTranscription(provider);
                 });
@@ -124,7 +145,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         children: [
           const CircularProgressIndicator(),
           const SizedBox(height: 32),
-          Text(
+          const Text(
             'Transcribing Audio',
             style: TextStyle(
               fontSize: AppConstants.defaultFontSize + 4,
@@ -132,7 +153,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             ),
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'Please wait while we convert your audio to text...',
             style: TextStyle(fontSize: AppConstants.defaultFontSize),
             textAlign: TextAlign.center,
@@ -145,7 +166,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             const SizedBox(height: 8),
             Text(
               '${(provider.transcriptionProgress! * 100).toInt()}%',
-              style: TextStyle(fontSize: AppConstants.defaultFontSize - 2),
+              style: const TextStyle(fontSize: AppConstants.defaultFontSize - 2),
             ),
           ],
         ],
@@ -154,13 +175,13 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   }
 
   Widget _buildSummarizingView(TranscriptionProvider provider) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
+    return const Padding(
+      padding: EdgeInsets.all(24.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(),
-          const SizedBox(height: 32),
+          CircularProgressIndicator(),
+          SizedBox(height: 32),
           Text(
             'Creating Summary',
             style: TextStyle(
@@ -168,7 +189,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             'Summarizing in simple, easy-to-understand language...',
             style: TextStyle(fontSize: AppConstants.defaultFontSize),
@@ -191,7 +212,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             color: Colors.red,
           ),
           const SizedBox(height: 24),
-          Text(
+          const Text(
             'Transcription Failed',
             style: TextStyle(
               fontSize: AppConstants.defaultFontSize + 4,
@@ -201,7 +222,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           const SizedBox(height: 16),
           Text(
             provider.transcriptionError ?? 'An error occurred',
-            style: TextStyle(fontSize: AppConstants.defaultFontSize),
+            style: const TextStyle(fontSize: AppConstants.defaultFontSize),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
@@ -210,7 +231,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             height: AppConstants.minTouchTargetSize,
             child: ElevatedButton(
               onPressed: () => provider.transcribeAudio(widget.audioFilePath),
-              child: Text(
+              child: const Text(
                 'Retry',
                 style: TextStyle(fontSize: AppConstants.defaultFontSize),
               ),
@@ -222,7 +243,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             height: AppConstants.minTouchTargetSize,
             child: OutlinedButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(
+              child: const Text(
                 'Cancel',
                 style: TextStyle(fontSize: AppConstants.defaultFontSize),
               ),
@@ -248,7 +269,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             color: Colors.orange,
           ),
           const SizedBox(height: 24),
-          Text(
+          const Text(
             'Summary Failed',
             style: TextStyle(
               fontSize: AppConstants.defaultFontSize + 4,
@@ -258,7 +279,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           const SizedBox(height: 16),
           Text(
             provider.summaryError ?? 'An error occurred',
-            style: TextStyle(fontSize: AppConstants.defaultFontSize),
+            style: const TextStyle(fontSize: AppConstants.defaultFontSize),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
@@ -267,7 +288,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             height: AppConstants.minTouchTargetSize,
             child: ElevatedButton(
               onPressed: () => provider.summarizeTranscription(),
-              child: Text(
+              child: const Text(
                 'Retry Summary',
                 style: TextStyle(fontSize: AppConstants.defaultFontSize),
               ),
@@ -279,7 +300,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             height: AppConstants.minTouchTargetSize,
             child: OutlinedButton(
               onPressed: () => _showTranscriptionOnly(context, provider),
-              child: Text(
+              child: const Text(
                 'View Transcription Only',
                 style: TextStyle(fontSize: AppConstants.defaultFontSize),
               ),
@@ -300,7 +321,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Summary Section
-          Text(
+          const Text(
             'Summary',
             style: TextStyle(
               fontSize: AppConstants.defaultFontSize + 6,
@@ -317,7 +338,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             ),
             child: Text(
               provider.summary!,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: AppConstants.defaultFontSize,
                 height: 1.5,
               ),
@@ -326,7 +347,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           const SizedBox(height: 16),
 
           // TTS Controls
-          Text(
+          const Text(
             'Listen to Summary',
             style: TextStyle(
               fontSize: AppConstants.defaultFontSize + 2,
@@ -334,6 +355,76 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             ),
           ),
           const SizedBox(height: 8),
+          if (_audioError != null)
+            Text(
+              _audioError!,
+              style: TextStyle(color: Colors.red[700]),
+            ),
+          if (_audioLoading)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  SizedBox(width: 8),
+                  Text('Loading audio...'),
+                ],
+              ),
+            ),
+
+          // Playback controls for recorded audio
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _audioLoading || _audioError != null
+                      ? null
+                      : () async {
+                          final messenger = ScaffoldMessenger.of(context);
+                          try {
+                            if (!_player.isPlaying) {
+                              await _player.play();
+                            }
+                          } catch (e) {
+                            messenger.showSnackBar(
+                              SnackBar(content: Text('Failed to play audio: $e')),
+                            );
+                          }
+                        },
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text(
+                    'Play Recording',
+                    style: TextStyle(fontSize: AppConstants.defaultFontSize),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              IconButton(
+                tooltip: 'Stop',
+                onPressed: _audioLoading || _audioError != null
+                    ? null
+                    : () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        try {
+                          await _player.stop();
+                        } catch (e) {
+                          messenger.showSnackBar(
+                            SnackBar(content: Text('Failed to stop audio: $e')),
+                          );
+                        }
+                      },
+                icon: const Icon(Icons.stop),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          // TTS play/stop for summary
           Row(
             children: [
               Expanded(
@@ -359,7 +450,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
 
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: provider.ttsLanguage,
+            initialValue: provider.ttsLanguage,
             decoration: const InputDecoration(
               labelText: 'Language',
             ),
@@ -490,8 +581,10 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     result.fold(
       onSuccess: (_) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Saved transcription & summary')),
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => const AppointmentsPage(),
+            ),
           );
         }
       },

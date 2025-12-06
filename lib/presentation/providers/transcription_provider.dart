@@ -190,7 +190,7 @@ class TranscriptionProvider extends ChangeNotifier {
 
   /// Load TTS settings from storage
   Future<void> loadTtsSettings() async {
-    final result = await _loadTtsSettings(NoParams());
+    final result = await _loadTtsSettings(const NoParams());
     result.fold(
       onSuccess: (settings) {
         _ttsLanguage = settings.language;
@@ -233,7 +233,7 @@ class TranscriptionProvider extends ChangeNotifier {
 
   /// Stop TTS
   Future<void> stopSpeaking() async {
-    final result = await _stopSpeaking(NoParams());
+    final result = await _stopSpeaking(const NoParams());
     result.fold(
       onSuccess: (_) {
         _isSpeaking = false;

@@ -117,7 +117,7 @@ EMA is a Flutter mobile application designed to assist elderly patients during m
 - **FR-4.1**: Read summarized transcription aloud using flutter_tts
 - **FR-4.2**: Support multiple languages for TTS
 - **FR-4.3**: Adjustable reading speed
-- **FR-4.4**: Play/pause/stop controls
+- **FR-4.4**: Play/stop controls (pause optional; removed due to plugin limits)
 - **FR-4.5**: Highlight text being read (if possible)
 - **Priority**: P0 (Critical)
 
@@ -135,13 +135,13 @@ EMA is a Flutter mobile application designed to assist elderly patients during m
 
 #### FR-6: Appointment Creation
 - **FR-6.1**: Create new appointment with fields:
-  - Date & time
-  - Hospital/clinic name
-  - Doctor name
+  - Date & time (picker implemented)
+  - Hospital/clinic name (implemented)
+  - Doctor name (implemented)
   - Speciality/Department
-  - Remarks/notes
-  - Location/address
-- **FR-6.2**: Associate recording with appointment
+  - Remarks/notes (implemented)
+  - Location/address (implemented)
+- **FR-6.2**: Associate recording with appointment (partial: linked on recording stop; ensure full CRUD linkage)
 - **FR-6.3**: Link multiple recordings to single appointment
 - **Priority**: P0 (Critical)
 

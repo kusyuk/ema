@@ -8,8 +8,8 @@
 ## Overall Progress
 
 **Status**: Development In Progress  
-**Current Phase**: Phase 7 - Text-to-Speech Feature (In Progress)  
-**Completion**: ~58% of MVP features  
+**Current Phase**: Phase 8 - Appointment Management (In Progress)  
+**Completion**: ~67% of MVP features  
 **App Status**: ✅ Running Successfully (Initialization issues resolved)
 
 ---
@@ -94,9 +94,9 @@
 
 ## Current Phase
 
-### 🔄 Phase 7: Text-to-Speech Feature (IN PROGRESS)
+### ✅ Phase 7: Text-to-Speech Feature (MOSTLY COMPLETE)
 
-**Status**: ~60% Complete
+**Status**: ~90% Complete
 
 #### Completed:
 - ✅ Created TTS service (`TtsService`) using flutter_tts
@@ -104,8 +104,10 @@
 - ✅ Wired TTS into DI and provider
 - ✅ Added Play/Stop controls and language/rate/pitch selectors on TranscriptionPage
 - ✅ Persist TTS settings via Hive (language/rate/pitch)
+- ✅ Inline playback + TTS controls on Appointment Detail (no dialog; better UX)
+- ✅ Lints cleaned; dependency order fixed
 
-#### Next Steps:
+#### Remaining polish:
 - [ ] Refine TTS UX defaults
 - [ ] (Optional) Expand language list
 
@@ -211,9 +213,9 @@
 1. Refine TTS UX defaults
 2. (Optional) Expand language list
 
-### Phase 8: Appointment Management (start)
-1. Appointment CRUD with Hive (ensure recordings are linked to appointments)
-2. Appointment list/detail UI with associated recordings/transcriptions
+### Phase 8: Appointment Management (in progress)
+1. Appointment CRUD with Hive (create/edit form added; delete implemented; finish validation + persistence polish)
+2. Appointment list/detail UI with associated recordings/transcriptions (detail has inline playback+TTS and delete; ensure linkage consistency + edit persist)
 3. Calendar integration (basic)
 4. Prepare for sharing/notifications (Phase 9/10)
 
@@ -222,8 +224,7 @@
 ## Known Issues
 
 ### Minor:
-- ⚠️ Dependency sorting warnings in `pubspec.yaml` (cosmetic only)
-- ⚠️ `.env` file needs to be in assets (✅ fixed)
+- None currently
 
 ### Resolved:
 - ✅ `.env` file not found at runtime (fixed by adding to assets)

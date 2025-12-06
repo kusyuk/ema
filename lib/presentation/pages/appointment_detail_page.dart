@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/di/injection_container.dart' as di;
+import '../../core/services/audio_player_service.dart';
+import '../../core/services/tts_service.dart';
+import '../../core/utils/file_storage.dart';
 import '../../core/utils/result.dart';
 import '../../domain/entities/appointment.dart';
 import '../../domain/entities/recording.dart';
 import '../../domain/usecases/appointments/get_appointment_by_id.dart';
+import '../../domain/usecases/appointments/delete_appointment.dart';
 import '../../domain/usecases/recordings/get_recordings_by_appointment.dart';
+import 'appointment_form_page.dart';
 import 'recording_page.dart';
 
 class AppointmentDetailPage extends StatefulWidget {
@@ -22,11 +27,23 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   List<Recording> _recordings = [];
   bool _loading = true;
   String? _error;
+  final AudioPlayerService _player = di.sl<AudioPlayerService>();
+  final TtsService _tts = di.sl<TtsService>();
+  bool _isSpeaking = false;
+  String? _ttsError;
 
   @override
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _player.stop();
+    _tts.stop();
+    _player.dispose();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -37,8 +54,12 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     final getAppt = di.sl<GetAppointmentById>();
     final getRecs = di.sl<GetRecordingsByAppointment>();
 
-    final apptResult = await getAppt(GetAppointmentByIdParams(widget.appointmentId));
-    final recResult = await getRecs(GetRecordingsByAppointmentParams(widget.appointmentId));
+    final apptResult = await getAppt(
+      GetAppointmentByIdParams(widget.appointmentId),
+    );
+    final recResult = await getRecs(
+      GetRecordingsByAppointmentParams(widget.appointmentId),
+    );
 
     apptResult.fold(
       onSuccess: (appt) {
@@ -74,9 +95,62 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _load,
+            icon: const Icon(Icons.edit),
+            tooltip: 'Edit',
+            onPressed: _appointment == null
+                ? null
+                : () async {
+                    final updated = await Navigator.of(context).push<bool>(
+                      MaterialPageRoute(
+                        builder: (_) => AppointmentFormPage(existing: _appointment),
+                      ),
+                    );
+                    if (updated == true && mounted) {
+                      _load();
+                    }
+                  },
           ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            tooltip: 'Delete',
+            onPressed: _appointment == null
+                ? null
+                : () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Delete appointment?'),
+                        content: const Text('This will remove the appointment. Recordings remain stored.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(false),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(true),
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed == true) {
+                      final delete = di.sl<DeleteAppointment>();
+                      final result = await delete(DeleteAppointmentParams(_appointment!.id));
+                      if (!mounted) return;
+                      result.fold(
+                        onSuccess: (_) {
+                          Navigator.of(context).pop(true);
+                        },
+                        onError: (failure) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Delete failed: ${failure.message}')),
+                          );
+                        },
+                      );
+                    }
+                  },
+          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _load),
         ],
       ),
       floatingActionButton: _appointment == null
@@ -85,7 +159,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) => RecordingPage(appointmentId: _appointment!.id),
+                    builder: (_) =>
+                        RecordingPage(appointmentId: _appointment!.id),
                   ),
                 );
               },
@@ -141,15 +216,21 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
           children: [
             Text(
               appt.doctorName,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: AppConstants.defaultFontSize + 4,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 4),
-            Text(appt.hospitalName, style: const TextStyle(fontSize: AppConstants.defaultFontSize)),
+            Text(
+              appt.hospitalName,
+              style: const TextStyle(fontSize: AppConstants.defaultFontSize),
+            ),
             const SizedBox(height: 8),
-            Text(_formatDateTime(appt.dateTime), style: const TextStyle(color: Colors.grey)),
+            Text(
+              _formatDateTime(appt.dateTime),
+              style: const TextStyle(color: Colors.grey),
+            ),
             if ((appt.speciality ?? '').isNotEmpty) ...[
               const SizedBox(height: 8),
               Text('Speciality: ${appt.speciality}'),
@@ -172,7 +253,10 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Recordings', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                'Recordings',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 12),
               Text(
                 'No recordings yet for this appointment',
@@ -192,9 +276,12 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
           children: [
             const Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Recordings', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Text(
+                'Recordings',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
-            ..._recordings.map(_buildRecordingTile).toList(),
+            ..._recordings.map(_buildRecordingTile),
           ],
         ),
       ),
@@ -202,54 +289,156 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   }
 
   Widget _buildRecordingTile(Recording rec) {
-    return ListTile(
-      leading: const Icon(Icons.mic),
-      title: Text('Recording ${rec.id}'),
-      subtitle: Text(
-        '${_formatDateTime(rec.createdAt)} • ${_formatDuration(rec.duration)}',
-        style: const TextStyle(fontSize: AppConstants.defaultFontSize - 2),
-      ),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: () {
-        // For now, just show a simple dialog with transcription/summary if present
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: const Text('Recording'),
-            content: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('File: ${rec.audioFilePath}'),
-                  const SizedBox(height: 8),
-                  Text('Duration: ${_formatDuration(rec.duration)}'),
-                  const SizedBox(height: 12),
-                  if ((rec.summarizedTranscription ?? '').isNotEmpty) ...[
-                    const Text('Summary:', style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
-                    Text(rec.summarizedTranscription!),
-                  ] else if ((rec.rawTranscription ?? '').isNotEmpty) ...[
-                    const Text('Transcription:', style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
-                    Text(rec.rawTranscription!),
-                  ] else
-                    const Text('No transcription available'),
-                ],
+    final hasSummary = (rec.summarizedTranscription ?? '').isNotEmpty;
+    final hasTranscript = (rec.rawTranscription ?? '').isNotEmpty;
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.mic),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Recording ${rec.id}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: AppConstants.defaultFontSize,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '${_formatDateTime(rec.createdAt)} • ${_formatDuration(rec.duration)}',
+              style: const TextStyle(
+                fontSize: AppConstants.defaultFontSize - 2,
               ),
             ),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
+            const SizedBox(height: 12),
+            const Text(
+              'Playback',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    try {
+                      final file = FileStorage.getAudioFile(rec.audioFilePath);
+                      await _player.loadAudio(file.path);
+                      await _player.play();
+                    } catch (e) {
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Play failed: $e')),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Play'),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  tooltip: 'Stop',
+                  onPressed: () async {
+                    await _player.stop();
+                  },
+                  icon: const Icon(Icons.stop),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'TTS Summary',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                ElevatedButton.icon(
+                  onPressed: hasSummary
+                      ? () async {
+                          try {
+                            setState(() {
+                              _isSpeaking = true;
+                              _ttsError = null;
+                            });
+                            await _tts.speak(
+                              text: rec.summarizedTranscription!,
+                              rate: 0.7,
+                              pitch: 1.0,
+                            );
+                            setState(() {
+                              _isSpeaking = false;
+                            });
+                          } catch (e) {
+                            setState(() {
+                              _ttsError = 'TTS failed';
+                              _isSpeaking = false;
+                            });
+                          }
+                        }
+                      : null,
+                  icon: const Icon(Icons.volume_up),
+                  label: const Text('Play Summary'),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  tooltip: 'Stop TTS',
+                  onPressed: _isSpeaking
+                      ? () async {
+                          await _tts.stop();
+                          setState(() {
+                            _isSpeaking = false;
+                          });
+                        }
+                      : null,
+                  icon: const Icon(Icons.stop),
+                ),
+              ],
+            ),
+            if (_ttsError != null) ...[
+              const SizedBox(height: 6),
+              Text(_ttsError!, style: TextStyle(color: Colors.red[700])),
             ],
-          ),
-        );
-      },
+            const SizedBox(height: 12),
+            if (hasSummary) ...[
+              const Text(
+                'Summary:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(rec.summarizedTranscription!),
+            ] else if (hasTranscript) ...[
+              const Text(
+                'Transcription:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(rec.rawTranscription!),
+            ] else
+              const Text('No transcription available'),
+          ],
+        ),
+      ),
     );
   }
 
   String _formatDateTime(DateTime dateTime) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final appointmentDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final appointmentDate = DateTime(
+      dateTime.year,
+      dateTime.month,
+      dateTime.day,
+    );
 
     if (appointmentDate == today) {
       return 'Today at ${_formatTime(dateTime)}';
@@ -280,5 +469,3 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     return '$minutes:$seconds';
   }
 }
-
-

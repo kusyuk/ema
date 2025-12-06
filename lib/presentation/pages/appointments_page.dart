@@ -4,7 +4,7 @@ import '../../core/di/injection_container.dart' as di;
 import '../../core/utils/result.dart';
 import '../../domain/entities/appointment.dart';
 import '../../domain/usecases/appointments/get_appointments.dart';
-import 'recording_page.dart';
+import 'appointment_form_page.dart';
 import 'appointment_detail_page.dart';
 
 /// Appointments page - Display list of appointments
@@ -72,16 +72,18 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         child: _buildBody(),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Navigate to create appointment or start recording
-          Navigator.of(context).push(
+        onPressed: () async {
+          final created = await Navigator.of(context).push<bool>(
             MaterialPageRoute(
-              builder: (context) => const RecordingPage(),
+              builder: (context) => const AppointmentFormPage(),
             ),
           );
+          if (created == true && mounted) {
+            _loadAppointments();
+          }
         },
         icon: const Icon(Icons.add),
-        label: const Text('New Recording'),
+        label: const Text('New Appointment'),
       ),
     );
   }
@@ -100,7 +102,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'Error loading appointments',
               style: TextStyle(fontSize: AppConstants.defaultFontSize),
             ),
@@ -121,12 +123,12 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     }
 
     if (_appointments.isEmpty) {
-      return Center(
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.calendar_today, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
+            Icon(Icons.calendar_today, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
             Text(
               'No appointments yet',
               style: TextStyle(
@@ -134,8 +136,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
-            const Text(
+            SizedBox(height: 8),
+            Text(
               'Start a recording to create your first appointment',
               style: TextStyle(color: Colors.grey),
               textAlign: TextAlign.center,
@@ -204,12 +206,15 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           ],
         ),
         trailing: const Icon(Icons.chevron_right),
-        onTap: () {
-          Navigator.of(context).push(
+        onTap: () async {
+          final changed = await Navigator.of(context).push<bool>(
             MaterialPageRoute(
               builder: (_) => AppointmentDetailPage(appointmentId: appointment.id),
             ),
           );
+          if (changed == true && mounted) {
+            _loadAppointments();
+          }
         },
       ),
     );

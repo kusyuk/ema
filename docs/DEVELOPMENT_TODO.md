@@ -3,7 +3,7 @@
 
 ### Project Status: Development In Progress
 ### Last Updated: 2025
-### Current Phase: Phase 7 - Text-to-Speech Feature
+### Current Phase: Phase 8 - Appointment Management
 
 ---
 
@@ -301,6 +301,7 @@
 - [x] **TTS-004**: Persist TTS settings (language/rate/pitch) ✅
 - [ ] **TTS-005**: Expand language list (as needed)
 - [ ] **TTS-006**: Refine UX defaults and accessibility cues
+- Note: Inline playback + TTS now available on Appointment Detail cards (dialog removed)
 
 ---
 
@@ -308,11 +309,11 @@
 
 #### 8.1 Appointment Data Management
 - [ ] **APT-001**: Appointment CRUD operations
-  - Create appointment with validation
+  - Create appointment with validation (form UI implemented; persist/validate across layers)
   - Save to Hive database
   - Retrieve appointments
-  - Update appointment details
-  - Delete appointment
+  - Update appointment details (UI hooked; ensure persistence)
+  - Delete appointment (implemented)
   - Associate recordings with appointments (ensure recordings show in history)
 
 - [ ] **APT-002**: Appointment queries
@@ -324,30 +325,31 @@
 
 #### 8.2 Appointment UI
 - [ ] **UI-APT-001**: Create appointment screen
-  - Date/time picker (large, accessible)
-  - Hospital name input
-  - Doctor name input
+  - Date/time picker (large, accessible) ✅
+  - Hospital name input ✅
+  - Doctor name input ✅
   - Speciality dropdown
-  - Remarks text field
-  - Location input
-  - Save button
-  - Form validation
+  - Remarks text field ✅
+  - Location input ✅
+  - Save button ✅
+  - Form validation (basic) ✅
 
 - [ ] **UI-APT-002**: Appointment list screen
   - Timeline view
-  - Appointment cards
+  - Appointment cards (basic) ✅
   - Date grouping
   - Filter options
   - Search functionality
-  - Pull to refresh
+  - Pull to refresh ✅
 
 - [ ] **UI-APT-003**: Appointment detail screen
-  - Display all appointment information
-  - Show associated recordings
-  - Display transcriptions (raw and summarized)
-  - Play audio controls
-  - Edit appointment option
-  - Delete appointment option
+  - Display all appointment information ✅
+  - Show associated recordings ✅
+  - Display transcriptions (raw and summarized) ✅
+  - Play audio controls ✅
+  - Text-to-speech controls (inline, no dialog) ✅
+  - Edit appointment option ✅
+  - Delete appointment option ✅
   - Share button
 
 - [ ] **UI-APT-004**: Calendar view

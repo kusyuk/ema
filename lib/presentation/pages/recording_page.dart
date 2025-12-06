@@ -112,7 +112,7 @@ class _RecordingPageState extends State<RecordingPage> {
             color: Colors.grey[400],
           ),
           const SizedBox(height: 24),
-          Text(
+          const Text(
             'Microphone Permission Required',
             style: TextStyle(
               fontSize: AppConstants.defaultFontSize + 4,
@@ -121,7 +121,7 @@ class _RecordingPageState extends State<RecordingPage> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'Please grant microphone permission to record your consultation.',
             style: TextStyle(fontSize: AppConstants.defaultFontSize),
             textAlign: TextAlign.center,
@@ -178,10 +178,10 @@ class _RecordingPageState extends State<RecordingPage> {
           // Timer display
           Text(
             _formatDuration(provider.duration),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: AppConstants.defaultFontSize + 20,
               fontWeight: FontWeight.bold,
-              fontFeatures: const [FontFeature.tabularFigures()],
+              fontFeatures: [FontFeature.tabularFigures()],
             ),
           ),
           
@@ -330,13 +330,15 @@ class _RecordingPageState extends State<RecordingPage> {
         const SizedBox(height: 8),
         Text(
           label,
-          style: TextStyle(fontSize: AppConstants.defaultFontSize - 2),
+          style: const TextStyle(fontSize: AppConstants.defaultFontSize - 2),
         ),
       ],
     );
   }
 
   Future<void> _handleStopRecording(BuildContext context, RecordingProvider provider) async {
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
     final result = await provider.stopRecording();
     
     if (mounted) {
@@ -401,7 +403,8 @@ class _RecordingPageState extends State<RecordingPage> {
                 }
 
                 // Navigate to transcription page
-                Navigator.of(context).pushReplacement(
+                if (!mounted) return;
+                navigator.pushReplacement(
                   MaterialPageRoute(
                     builder: (context) => TranscriptionPage(
                       audioFilePath: fileName,
@@ -412,7 +415,7 @@ class _RecordingPageState extends State<RecordingPage> {
                 );
               },
               onError: (failure) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.showSnackBar(
                   SnackBar(
                     content: Text('Failed to save recording: ${failure.message}'),
                     backgroundColor: Colors.red,
@@ -423,7 +426,7 @@ class _RecordingPageState extends State<RecordingPage> {
           }
         },
         onError: (failure) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          messenger.showSnackBar(
             SnackBar(
               content: Text(failure.message),
               backgroundColor: Colors.red,
