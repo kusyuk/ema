@@ -1,5 +1,7 @@
+import '../../core/utils/result.dart';
+
 /// Repository interface for transcription
 abstract class TranscriptionRepository {
-  Future<String> transcribeAudio(String audioFilePath);
+  Future<Result<String>> transcribeAudio(String audioFilePath);
 }
 

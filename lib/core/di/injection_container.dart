@@ -9,8 +9,14 @@ import '../../data/datasources/appointment_local_data_source.dart';
 import '../../data/datasources/recording_local_data_source.dart';
 import '../../data/datasources/groq_remote_data_source.dart';
 import '../../data/datasources/elevenlabs_remote_data_source.dart';
-import '../../data/datasources/groq_remote_data_source.dart';
-import '../../data/datasources/elevenlabs_remote_data_source.dart';
+import '../../domain/repositories/appointment_repository.dart';
+import '../../domain/repositories/recording_repository.dart';
+import '../../domain/repositories/transcription_repository.dart';
+import '../../domain/repositories/summarization_repository.dart';
+import '../../data/repositories/appointment_repository_impl.dart';
+import '../../data/repositories/recording_repository_impl.dart';
+import '../../data/repositories/transcription_repository_impl.dart';
+import '../../data/repositories/summarization_repository_impl.dart';
 
 /// Service locator instance
 final sl = GetIt.instance;

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/env_constants.dart';
 import '../../core/errors/exceptions.dart';

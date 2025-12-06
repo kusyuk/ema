@@ -1,16 +1,17 @@
+import '../../core/utils/result.dart';
 import '../entities/appointment.dart';
 
 /// Repository interface for appointments
 abstract class AppointmentRepository {
-  Future<List<Appointment>> getAppointments();
-  Future<Appointment> getAppointmentById(String id);
-  Future<Appointment> createAppointment(Appointment appointment);
-  Future<Appointment> updateAppointment(Appointment appointment);
-  Future<void> deleteAppointment(String id);
-  Future<List<Appointment>> getAppointmentsByDateRange(
+  Future<Result<List<Appointment>>> getAppointments();
+  Future<Result<Appointment>> getAppointmentById(String id);
+  Future<Result<Appointment>> createAppointment(Appointment appointment);
+  Future<Result<Appointment>> updateAppointment(Appointment appointment);
+  Future<Result<void>> deleteAppointment(String id);
+  Future<Result<List<Appointment>>> getAppointmentsByDateRange(
     DateTime startDate,
     DateTime endDate,
   );
-  Future<List<Appointment>> getUpcomingAppointments();
+  Future<Result<List<Appointment>>> getUpcomingAppointments();
 }
 
