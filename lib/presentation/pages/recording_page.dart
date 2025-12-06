@@ -277,7 +277,7 @@ class _RecordingPageState extends State<RecordingPage> {
                 label: provider.isRecording ? 'Stop' : 'Start',
                 onPressed: provider.isRecording
                     ? () => _handleStopRecording(context, provider)
-                    : () => provider.startRecording(),
+                    : () => _handleStartRecording(context, provider),
                 color: provider.isRecording ? Colors.red : Colors.green,
                 isLarge: true,
               ),
@@ -333,6 +333,43 @@ class _RecordingPageState extends State<RecordingPage> {
           style: const TextStyle(fontSize: AppConstants.defaultFontSize - 2),
         ),
       ],
+    );
+  }
+
+  Future<void> _handleStartRecording(
+    BuildContext context,
+    RecordingProvider provider,
+  ) async {
+    final navigator = Navigator.of(context);
+    final consent = await _showConsentDialog(context);
+    if (consent != true) {
+      if (!mounted) return;
+      navigator.popUntil((route) => route.isFirst);
+      return;
+    }
+    await provider.startRecording();
+  }
+
+  Future<bool?> _showConsentDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Doctor Consent'),
+        content: const Text(
+          'Please confirm you have the doctor’s permission to record this consultation.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('No, go back'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('I have consent'),
+          ),
+        ],
+      ),
     );
   }
 
