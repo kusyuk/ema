@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'core/di/injection_container.dart' as di;
 import 'core/constants/app_constants.dart';
+import 'core/theme/app_theme.dart';
 import 'presentation/pages/root_page.dart';
+import 'presentation/pages/onboarding_page.dart';
+import 'package:hive/hive.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +20,10 @@ void main() async {
       DeviceOrientation.portraitDown,
     ]);
     
-    runApp(const MainApp());
+    final box = di.sl<Box<dynamic>>();
+    final showOnboarding = !(box.get('onboarding_seen') as bool? ?? false);
+
+    runApp(MainApp(showOnboarding: showOnboarding));
   } catch (e, stackTrace) {
     // Log error and show error screen
     debugPrint('Error during initialization: $e');
@@ -54,26 +60,17 @@ void main() async {
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  final bool showOnboarding;
+
+  const MainApp({super.key, required this.showOnboarding});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-          brightness: Brightness.light,
-        ),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(fontSize: AppConstants.defaultFontSize),
-          bodyMedium: TextStyle(fontSize: AppConstants.defaultFontSize),
-          bodySmall: TextStyle(fontSize: AppConstants.defaultFontSize),
-        ),
-      ),
-      home: const RootPage(),
+      theme: AppTheme.lightTheme(),
+      home: showOnboarding ? const OnboardingPage() : const RootPage(),
     );
   }
 }

@@ -188,41 +188,34 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Reminder'),
-                        subtitle: const Text('Notify before appointment'),
-                        value: _reminderEnabled,
-                        onChanged: (v) => setState(() => _reminderEnabled = v),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: DropdownButtonFormField<int>(
-                        initialValue: _reminderMinutes,
-                        decoration: const InputDecoration(
-                          labelText: 'Lead time',
-                          border: OutlineInputBorder(),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Reminder'),
+                  subtitle: const Text('Notify before appointment'),
+                  value: _reminderEnabled,
+                  onChanged: (v) => setState(() => _reminderEnabled = v),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<int>(
+                  isExpanded: true,
+                  initialValue: _reminderMinutes,
+                  decoration: const InputDecoration(
+                    labelText: 'Lead time',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: AppConstants.reminderOptionsMinutes
+                      .map(
+                        (m) => DropdownMenuItem(
+                          value: m,
+                          child: Text(_formatLead(m)),
                         ),
-                        items: AppConstants.reminderOptionsMinutes
-                            .map(
-                              (m) => DropdownMenuItem(
-                                value: m,
-                                child: Text(_formatLead(m)),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: _reminderEnabled
-                            ? (v) {
-                                if (v != null) setState(() => _reminderMinutes = v);
-                              }
-                            : null,
-                      ),
-                    ),
-                  ],
+                      )
+                      .toList(),
+                  onChanged: _reminderEnabled
+                      ? (v) {
+                          if (v != null) setState(() => _reminderMinutes = v);
+                        }
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(

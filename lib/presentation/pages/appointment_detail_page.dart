@@ -14,7 +14,6 @@ import '../../domain/usecases/appointments/delete_appointment.dart';
 import '../../domain/usecases/recordings/get_recordings_by_appointment.dart';
 import '../../domain/usecases/recordings/delete_recording.dart';
 import 'appointment_form_page.dart';
-import 'recording_page.dart';
 
 class AppointmentDetailPage extends StatefulWidget {
   final String appointmentId;
@@ -212,20 +211,6 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
           IconButton(icon: const Icon(Icons.refresh), onPressed: _load),
         ],
       ),
-      floatingActionButton: _appointment == null
-          ? null
-          : FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        RecordingPage(appointmentId: _appointment!.id),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.mic),
-              label: const Text('New Recording'),
-            ),
       body: SafeArea(child: _buildBody()),
     );
   }

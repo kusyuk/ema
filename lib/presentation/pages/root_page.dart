@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
+import '../../core/theme/app_theme.dart';
 import 'calendar_home_page.dart';
 import 'history_page.dart';
 import 'settings_page.dart';
@@ -29,40 +31,62 @@ class _RootPageState extends State<RootPage> {
         index: _index,
         children: _pages,
       ),
-      floatingActionButton: _index == 0
-          ? _calendarFab(context)
-          : null,
-      bottomNavigationBar: BottomNavigationBar(
+      floatingActionButton: _calendarFab(context),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
+      bottomNavigationBar: StylishBottomBar(
+        option: BubbleBarOptions(
+          barStyle: BubbleBarStyle.horizontal,
+          bubbleFillStyle: BubbleFillStyle.fill,
+          opacity: 0.12,
+        ),
         currentIndex: _index,
-        onTap: (i) => setState(() => _index = i),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'Home',
+        backgroundColor: AppTheme.primaryLight,
+        items: [
+          BottomBarItem(
+            icon: const Icon(Icons.calendar_month),
+            selectedIcon: const Icon(Icons.calendar_month),
+            title: const Text('Home'),
+            selectedColor: AppTheme.accent,
+            unSelectedColor: AppTheme.iconDefault,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'History',
+          BottomBarItem(
+            icon: const Icon(Icons.history),
+            selectedIcon: const Icon(Icons.history),
+            title: const Text('History'),
+            selectedColor: AppTheme.accent,
+            unSelectedColor: AppTheme.iconDefault,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+          BottomBarItem(
+            icon: const Icon(Icons.settings),
+            selectedIcon: const Icon(Icons.settings),
+            title: const Text('Settings'),
+            selectedColor: AppTheme.accent,
+            unSelectedColor: AppTheme.iconDefault,
           ),
         ],
+        onTap: (i) => setState(() => _index = i),
+        fabLocation: StylishBarFabLocation.end,
+        hasNotch: false,
       ),
     );
   }
 
   Widget _calendarFab(BuildContext context) {
-    return FloatingActionButton.extended(
+    return FloatingActionButton(
       onPressed: () async {
         final state = _calendarKey.currentState;
         if (state != null) {
           await state.createAppointment();
+        } else {
+          setState(() => _index = 0);
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            if (_calendarKey.currentState != null) {
+              await _calendarKey.currentState!.createAppointment();
+            }
+          });
         }
       },
-      icon: const Icon(Icons.add),
-      label: const Text('New Appointment'),
+      child: const Icon(Icons.add),
     );
   }
 }
