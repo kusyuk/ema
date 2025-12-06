@@ -13,6 +13,7 @@ import '../../domain/usecases/appointments/get_appointment_by_id.dart';
 import '../../domain/usecases/appointments/delete_appointment.dart';
 import '../../domain/usecases/recordings/get_recordings_by_appointment.dart';
 import '../../domain/usecases/recordings/delete_recording.dart';
+import '../../core/services/refresh_service.dart';
 import 'appointment_form_page.dart';
 
 class AppointmentDetailPage extends StatefulWidget {
@@ -142,11 +143,13 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                 : () async {
                     final updated = await Navigator.of(context).push<bool>(
                       MaterialPageRoute(
-                        builder: (_) => AppointmentFormPage(existing: _appointment),
+                        builder: (_) =>
+                            AppointmentFormPage(existing: _appointment),
                       ),
                     );
                     if (updated == true && mounted) {
                       _load();
+                      di.sl<RefreshService>().triggerRefresh();
                     }
                   },
           ),
@@ -162,7 +165,9 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                       context: context,
                       builder: (ctx) => AlertDialog(
                         title: const Text('Delete appointment?'),
-                        content: const Text('This will remove the appointment. Recordings remain stored.'),
+                        content: const Text(
+                          'This will remove the appointment. Recordings remain stored.',
+                        ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(ctx).pop(false),
@@ -180,23 +185,36 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                       final delete = di.sl<DeleteAppointment>();
                       final deleteRecording = di.sl<DeleteRecording>();
                       final notificationService = di.sl<NotificationService>();
-                      await notificationService.cancelAppointmentReminder(_appointment!.id);
-                      final result = await delete(DeleteAppointmentParams(_appointment!.id));
+                      await notificationService.cancelAppointmentReminder(
+                        _appointment!.id,
+                      );
+                      final result = await delete(
+                        DeleteAppointmentParams(_appointment!.id),
+                      );
                       if (!mounted) return;
                       result.fold(
                         onSuccess: (_) async {
                           // Cascade delete recordings and audio files for this appointment
                           for (final rec in _recordings) {
-                            await deleteRecording(DeleteRecordingParams(rec.id));
+                            await deleteRecording(
+                              DeleteRecordingParams(rec.id),
+                            );
                             try {
-                              await FileStorage.deleteAudioFile(rec.audioFilePath);
+                              await FileStorage.deleteAudioFile(
+                                rec.audioFilePath,
+                              );
                             } catch (_) {}
                           }
+                          di.sl<RefreshService>().triggerRefresh();
                           navigator.pop(true);
                         },
                         onError: (failure) {
                           messenger.showSnackBar(
-                            SnackBar(content: Text('Delete failed: ${failure.message}')),
+                            SnackBar(
+                              content: Text(
+                                'Delete failed: ${failure.message}',
+                              ),
+                            ),
                           );
                         },
                       );
@@ -372,24 +390,28 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
             const SizedBox(height: 6),
             Row(
               children: [
-                Semantics(
-                  label: 'Play recording',
-                  button: true,
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      try {
-                        final file = FileStorage.getAudioFile(rec.audioFilePath);
-                        await _player.loadAudio(file.path);
-                        await _player.play();
-                      } catch (e) {
-                        if (!mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Play failed: $e')),
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.play_arrow),
-                    label: const Text('Play'),
+                Expanded(
+                  child: Semantics(
+                    label: 'Play recording',
+                    button: true,
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        try {
+                          final file = FileStorage.getAudioFile(
+                            rec.audioFilePath,
+                          );
+                          await _player.loadAudio(file.path);
+                          await _player.play();
+                        } catch (e) {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Play failed: $e')),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.play_arrow),
+                      label: const Text('Play'),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -414,35 +436,37 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
             const SizedBox(height: 6),
             Row(
               children: [
-                Semantics(
-                  label: 'Play summary with text to speech',
-                  button: true,
-                  child: ElevatedButton.icon(
-                    onPressed: hasSummary
-                        ? () async {
-                            try {
-                              setState(() {
-                                _isSpeaking = true;
-                                _ttsError = null;
-                              });
-                              await _tts.speak(
-                                text: rec.summarizedTranscription!,
-                                rate: 0.7,
-                                pitch: 1.0,
-                              );
-                              setState(() {
-                                _isSpeaking = false;
-                              });
-                            } catch (e) {
-                              setState(() {
-                                _ttsError = 'TTS failed';
-                                _isSpeaking = false;
-                              });
+                Expanded(
+                  child: Semantics(
+                    label: 'Play summary with text to speech',
+                    button: true,
+                    child: ElevatedButton.icon(
+                      onPressed: hasSummary
+                          ? () async {
+                              try {
+                                setState(() {
+                                  _isSpeaking = true;
+                                  _ttsError = null;
+                                });
+                                await _tts.speak(
+                                  text: rec.summarizedTranscription!,
+                                  rate: 0.7,
+                                  pitch: 1.0,
+                                );
+                                setState(() {
+                                  _isSpeaking = false;
+                                });
+                              } catch (e) {
+                                setState(() {
+                                  _ttsError = 'TTS failed';
+                                  _isSpeaking = false;
+                                });
+                              }
                             }
-                          }
-                        : null,
-                    icon: const Icon(Icons.volume_up),
-                    label: const Text('Play Summary'),
+                          : null,
+                      icon: const Icon(Icons.volume_up),
+                      label: const Text('Play Summary'),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -469,6 +493,21 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
               Text(_ttsError!, style: TextStyle(color: Colors.red[700])),
             ],
             const SizedBox(height: 12),
+            if (hasTranscript) ...[
+              ExpansionTile(
+                title: const Text(
+                  'Full Transcription',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(rec.rawTranscription!),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
             if (hasSummary) ...[
               const Text(
                 'Summary:',

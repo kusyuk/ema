@@ -12,7 +12,7 @@ import '../../domain/usecases/tts/speak_text.dart';
 import '../../domain/usecases/tts/stop_speaking.dart';
 import '../../domain/usecases/tts/load_tts_settings.dart';
 import '../../domain/usecases/tts/save_tts_settings.dart';
-import '../pages/appointments_page.dart';
+import '../pages/appointment_detail_page.dart';
 import '../pages/root_page.dart';
 import '../providers/transcription_provider.dart';
 import '../widgets/labeled_slider.dart';
@@ -595,10 +595,13 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     if (!mounted) return;
 
     result.fold(
-      onSuccess: (_) {
+      onSuccess: (recording) {
         if (mounted) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const AppointmentsPage()),
+            MaterialPageRoute(
+              builder: (_) =>
+                  AppointmentDetailPage(appointmentId: recording.appointmentId),
+            ),
           );
         }
       },

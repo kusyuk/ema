@@ -4,6 +4,7 @@ import '../../core/di/injection_container.dart' as di;
 import '../../core/utils/result.dart';
 import '../../domain/entities/appointment.dart';
 import '../../domain/usecases/appointments/get_appointments.dart';
+import '../../core/services/refresh_service.dart';
 import 'appointment_detail_page.dart';
 
 enum _HistoryFilter { all, upcoming, past }
@@ -26,6 +27,19 @@ class _HistoryPageState extends State<HistoryPage> {
   void initState() {
     super.initState();
     _loadAppointments();
+    di.sl<RefreshService>().addListener(_onRefresh);
+  }
+
+  @override
+  void dispose() {
+    di.sl<RefreshService>().removeListener(_onRefresh);
+    super.dispose();
+  }
+
+  void _onRefresh() {
+    if (mounted) {
+      _loadAppointments();
+    }
   }
 
   Future<void> _loadAppointments() async {

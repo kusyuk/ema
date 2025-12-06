@@ -6,6 +6,7 @@ import '../../core/services/notification_service.dart';
 import '../../domain/entities/appointment.dart';
 import '../../domain/usecases/appointments/create_appointment.dart';
 import '../../domain/usecases/appointments/update_appointment.dart';
+import '../../core/services/refresh_service.dart';
 
 class AppointmentFormPage extends StatefulWidget {
   final Appointment? existing;
@@ -134,6 +135,7 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
           if (updated.reminderEnabled) {
             await notificationService.scheduleAppointmentReminder(updated);
           }
+          di.sl<RefreshService>().triggerRefresh();
           navigator.pop(true);
         },
         onError: (failure) {
@@ -167,6 +169,7 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
           if (appt.reminderEnabled) {
             await notificationService.scheduleAppointmentReminder(appt);
           }
+          di.sl<RefreshService>().triggerRefresh();
           navigator.pop(true);
         },
         onError: (failure) {

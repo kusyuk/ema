@@ -4,6 +4,7 @@ import '../../core/utils/logger.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/usecase.dart';
 import '../../domain/entities/tts_settings.dart';
+import '../../domain/entities/recording.dart';
 import '../../domain/usecases/transcription/transcribe_audio.dart';
 import '../../domain/usecases/summarization/summarize_text.dart';
 import '../../domain/usecases/recordings/save_transcription_and_summary.dart';
@@ -45,14 +46,14 @@ class TranscriptionProvider extends ChangeNotifier {
     required LoadTtsSettings loadTtsSettings,
     required SaveTtsSettings saveTtsSettings,
     String? recordingId,
-  })  : _transcribeAudio = transcribeAudio,
-        _summarizeText = summarizeText,
-        _saveTranscriptionAndSummary = saveTranscriptionAndSummary,
-        _speakText = speakText,
-        _stopSpeaking = stopSpeaking,
-        _loadTtsSettings = loadTtsSettings,
-        _saveTtsSettings = saveTtsSettings,
-        _recordingId = recordingId;
+  }) : _transcribeAudio = transcribeAudio,
+       _summarizeText = summarizeText,
+       _saveTranscriptionAndSummary = saveTranscriptionAndSummary,
+       _speakText = speakText,
+       _stopSpeaking = stopSpeaking,
+       _loadTtsSettings = loadTtsSettings,
+       _saveTtsSettings = saveTtsSettings,
+       _recordingId = recordingId;
 
   bool get isTranscribing => _isTranscribing;
   bool get isSummarizing => _isSummarizing;
@@ -69,7 +70,9 @@ class TranscriptionProvider extends ChangeNotifier {
 
   /// Transcribe audio file
   Future<void> transcribeAudio(String audioFilePath) async {
-    Logger.info('TranscriptionProvider: Starting transcription for: $audioFilePath');
+    Logger.info(
+      'TranscriptionProvider: Starting transcription for: $audioFilePath',
+    );
     _isTranscribing = true;
     _transcriptionError = null;
     _transcription = null;
@@ -84,22 +87,33 @@ class TranscriptionProvider extends ChangeNotifier {
 
       result.fold(
         onSuccess: (transcription) {
-          Logger.info('TranscriptionProvider: Transcription successful (${transcription.length} chars)');
+          Logger.info(
+            'TranscriptionProvider: Transcription successful (${transcription.length} chars)',
+          );
           _transcription = transcription;
           _isTranscribing = false;
           _transcriptionProgress = 1.0;
           notifyListeners();
-          
+
           // Automatically start summarization
-          Logger.info('TranscriptionProvider: Starting automatic summarization...');
+          Logger.info(
+            'TranscriptionProvider: Starting automatic summarization...',
+          );
           summarizeTranscription();
         },
         onError: (failure) {
-          Logger.error('TranscriptionProvider: Transcription failed', error: failure);
-          Logger.error('TranscriptionProvider: Failure type: ${failure.runtimeType}');
-          Logger.error('TranscriptionProvider: Failure message: ${failure.message}');
-          _transcriptionError = failure.message.isNotEmpty 
-              ? failure.message 
+          Logger.error(
+            'TranscriptionProvider: Transcription failed',
+            error: failure,
+          );
+          Logger.error(
+            'TranscriptionProvider: Failure type: ${failure.runtimeType}',
+          );
+          Logger.error(
+            'TranscriptionProvider: Failure message: ${failure.message}',
+          );
+          _transcriptionError = failure.message.isNotEmpty
+              ? failure.message
               : 'An error occurred during transcription. Please check logs for details.';
           _isTranscribing = false;
           _transcriptionProgress = null;
@@ -107,7 +121,11 @@ class TranscriptionProvider extends ChangeNotifier {
         },
       );
     } catch (e, stackTrace) {
-      Logger.error('TranscriptionProvider: Unexpected error during transcription', error: e, stackTrace: stackTrace);
+      Logger.error(
+        'TranscriptionProvider: Unexpected error during transcription',
+        error: e,
+        stackTrace: stackTrace,
+      );
       _transcriptionError = 'Unexpected error: ${e.toString()}';
       _isTranscribing = false;
       _transcriptionProgress = null;
@@ -151,26 +169,21 @@ class TranscriptionProvider extends ChangeNotifier {
   }
 
   /// Save transcription and summary to recording
-  Future<Result<void>> saveToRecording() async {
+  Future<Result<Recording>> saveToRecording() async {
     final recordingId = _recordingId;
     final transcription = _transcription;
     final summary = _summary;
-    
+
     if (recordingId == null || transcription == null || summary == null) {
       return const Error(ValidationFailure('Missing required data to save'));
     }
 
-    final result = await _saveTranscriptionAndSummary(
+    return await _saveTranscriptionAndSummary(
       SaveTranscriptionAndSummaryParams(
         recordingId: recordingId,
         transcription: transcription,
         summary: summary,
       ),
-    );
-
-    return result.fold(
-      onSuccess: (_) => const Success(null),
-      onError: (failure) => Error(failure),
     );
   }
 
@@ -277,4 +290,3 @@ class TranscriptionProvider extends ChangeNotifier {
     await _saveTtsSettings(SaveTtsSettingsParams(settings));
   }
 }
-

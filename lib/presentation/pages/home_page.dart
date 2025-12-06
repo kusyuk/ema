@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import 'recording_page.dart';
-import 'appointments_page.dart';
+import 'history_page.dart';
 
 /// Home page - Main entry point of the app
 class HomePage extends StatelessWidget {
@@ -82,7 +82,7 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const AppointmentsPage(),
+                      builder: (context) => const HistoryPage(),
                     ),
                   );
                 },

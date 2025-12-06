@@ -9,6 +9,7 @@ import 'appointment_form_page.dart';
 import 'appointment_detail_page.dart';
 import 'recording_page.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/services/refresh_service.dart';
 
 class CalendarHomePage extends StatefulWidget {
   const CalendarHomePage({super.key});
@@ -35,6 +36,19 @@ class CalendarHomePageState extends State<CalendarHomePage> {
   void initState() {
     super.initState();
     _loadAppointments();
+    di.sl<RefreshService>().addListener(_onRefresh);
+  }
+
+  @override
+  void dispose() {
+    di.sl<RefreshService>().removeListener(_onRefresh);
+    super.dispose();
+  }
+
+  void _onRefresh() {
+    if (mounted) {
+      _loadAppointments();
+    }
   }
 
   Future<void> _loadAppointments() async {
