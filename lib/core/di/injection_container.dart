@@ -5,6 +5,8 @@ import '../constants/app_constants.dart';
 import '../constants/env_constants.dart';
 import '../network/api_client.dart';
 import '../utils/file_storage.dart';
+import '../services/audio_recorder_service.dart';
+import '../services/audio_player_service.dart';
 import '../../data/datasources/appointment_local_data_source.dart';
 import '../../data/datasources/recording_local_data_source.dart';
 import '../../data/datasources/groq_remote_data_source.dart';
@@ -17,6 +19,22 @@ import '../../data/repositories/appointment_repository_impl.dart';
 import '../../data/repositories/recording_repository_impl.dart';
 import '../../data/repositories/transcription_repository_impl.dart';
 import '../../data/repositories/summarization_repository_impl.dart';
+import '../../domain/usecases/appointments/create_appointment.dart';
+import '../../domain/usecases/appointments/get_appointments.dart';
+import '../../domain/usecases/appointments/get_appointment_by_id.dart';
+import '../../domain/usecases/appointments/update_appointment.dart';
+import '../../domain/usecases/appointments/delete_appointment.dart';
+import '../../domain/usecases/appointments/get_upcoming_appointments.dart';
+import '../../domain/usecases/recordings/create_recording.dart';
+import '../../domain/usecases/recordings/get_recordings_by_appointment.dart';
+import '../../domain/usecases/recordings/update_recording.dart';
+import '../../domain/usecases/transcription/transcribe_audio.dart';
+import '../../domain/usecases/summarization/summarize_text.dart';
+import '../../domain/usecases/recordings/start_recording.dart';
+import '../../domain/usecases/recordings/stop_recording.dart';
+import '../../domain/usecases/recordings/pause_recording.dart';
+import '../../domain/usecases/recordings/resume_recording.dart';
+import '../../domain/usecases/recordings/check_recording_permission.dart';
 
 /// Service locator instance
 final sl = GetIt.instance;
@@ -48,6 +66,15 @@ Future<void> init() async {
   // Register API clients
   sl.registerLazySingleton<ApiClient>(
     () => ApiClient(sl<Dio>()),
+  );
+  
+  // Register audio services
+  sl.registerLazySingleton<AudioRecorderService>(
+    () => AudioRecorderService(),
+  );
+  
+  sl.registerLazySingleton<AudioPlayerService>(
+    () => AudioPlayerService(),
   );
   
   // Register Hive box
@@ -91,6 +118,73 @@ Future<void> init() async {
     () => SummarizationRepositoryImpl(sl<GroqRemoteDataSource>()),
   );
   
-  // TODO: Register use cases as they are created
+  // Register use cases - Appointments
+  sl.registerLazySingleton<CreateAppointment>(
+    () => CreateAppointment(sl<AppointmentRepository>()),
+  );
+  
+  sl.registerLazySingleton<GetAppointments>(
+    () => GetAppointments(sl<AppointmentRepository>()),
+  );
+  
+  sl.registerLazySingleton<GetAppointmentById>(
+    () => GetAppointmentById(sl<AppointmentRepository>()),
+  );
+  
+  sl.registerLazySingleton<UpdateAppointment>(
+    () => UpdateAppointment(sl<AppointmentRepository>()),
+  );
+  
+  sl.registerLazySingleton<DeleteAppointment>(
+    () => DeleteAppointment(sl<AppointmentRepository>()),
+  );
+  
+  sl.registerLazySingleton<GetUpcomingAppointments>(
+    () => GetUpcomingAppointments(sl<AppointmentRepository>()),
+  );
+  
+  // Register use cases - Recordings
+  sl.registerLazySingleton<CreateRecording>(
+    () => CreateRecording(sl<RecordingRepository>()),
+  );
+  
+  sl.registerLazySingleton<GetRecordingsByAppointment>(
+    () => GetRecordingsByAppointment(sl<RecordingRepository>()),
+  );
+  
+  sl.registerLazySingleton<UpdateRecording>(
+    () => UpdateRecording(sl<RecordingRepository>()),
+  );
+  
+  // Register use cases - Transcription
+  sl.registerLazySingleton<TranscribeAudio>(
+    () => TranscribeAudio(sl<TranscriptionRepository>()),
+  );
+  
+  // Register use cases - Summarization
+  sl.registerLazySingleton<SummarizeText>(
+    () => SummarizeText(sl<SummarizationRepository>()),
+  );
+  
+  // Register use cases - Recording operations
+  sl.registerLazySingleton<StartRecording>(
+    () => StartRecording(sl<AudioRecorderService>()),
+  );
+  
+  sl.registerLazySingleton<StopRecording>(
+    () => StopRecording(sl<AudioRecorderService>()),
+  );
+  
+  sl.registerLazySingleton<PauseRecording>(
+    () => PauseRecording(sl<AudioRecorderService>()),
+  );
+  
+  sl.registerLazySingleton<ResumeRecording>(
+    () => ResumeRecording(sl<AudioRecorderService>()),
+  );
+  
+  sl.registerLazySingleton<CheckRecordingPermission>(
+    () => CheckRecordingPermission(sl<AudioRecorderService>()),
+  );
 }
 
