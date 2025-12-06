@@ -71,7 +71,7 @@ class AppTheme {
 
     return base.copyWith(
       appBarTheme: const AppBarTheme(
-        backgroundColor: primaryDark,
+        backgroundColor: iconDefault, // use palette blue
         foregroundColor: primaryLight,
         elevation: 0,
       ),
@@ -178,7 +178,7 @@ class AppTheme {
 
     return base.copyWith(
       appBarTheme: const AppBarTheme(
-        backgroundColor: primaryDark,
+        backgroundColor: iconDefault, // use palette blue
         foregroundColor: primaryLight,
         elevation: 0,
       ),

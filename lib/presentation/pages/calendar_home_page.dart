@@ -208,24 +208,24 @@ class CalendarHomePageState extends State<CalendarHomePage> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: AppTheme.primaryDark,
+              color: AppTheme.iconDefault,
               borderRadius: BorderRadius.circular(28),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Column(
               children: [
                 const SizedBox(height: 8),
-                const Text(
-                  'Appointments',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
+                Text(
+                  _monthYearLabel(_focusedDay),
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
                     color: AppTheme.primaryLight,
                   ),
                 ),
                 const SizedBox(height: 12),
                 Card(
-                  color: AppTheme.primaryLight,
+                  color: AppTheme.surfaceLight,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -270,17 +270,17 @@ class CalendarHomePageState extends State<CalendarHomePage> {
                         formatButtonVisible: false,
                         titleCentered: true,
                         titleTextStyle: TextStyle(
-                          color: AppTheme.textOnDark,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                          color: AppTheme.textSecondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                         ),
                         leftChevronIcon: Icon(
                           Icons.chevron_left,
-                          color: AppTheme.iconDefault,
+                          color: AppTheme.textSecondary,
                         ),
                         rightChevronIcon: Icon(
                           Icons.chevron_right,
-                          color: AppTheme.iconDefault,
+                          color: AppTheme.textSecondary,
                         ),
                       ),
                     ),
@@ -294,6 +294,24 @@ class CalendarHomePageState extends State<CalendarHomePage> {
         ],
       ),
     );
+  }
+
+  String _monthYearLabel(DateTime date) {
+    final months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return '${months[date.month - 1]} ${date.year}';
   }
 
   Widget _buildSelectedDayCard(
@@ -319,8 +337,9 @@ class CalendarHomePageState extends State<CalendarHomePage> {
             Text(
               title,
               style: const TextStyle(
-                fontSize: AppConstants.defaultFontSize + 2,
-                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textPrimaryDark,
               ),
             ),
             const SizedBox(height: 12),
@@ -354,7 +373,7 @@ class CalendarHomePageState extends State<CalendarHomePage> {
             else if (!isPast)
               Text(
                 _reminderLeadTextForSelection(appointments),
-                style: TextStyle(color: Colors.grey[700]),
+                style: const TextStyle(color: AppTheme.textSecondary),
               ),
             const SizedBox(height: 12),
             if (appointments.isEmpty)
