@@ -5,6 +5,7 @@ import '../../domain/usecases/recordings/stop_recording.dart';
 import '../../domain/usecases/recordings/pause_recording.dart';
 import '../../domain/usecases/recordings/resume_recording.dart';
 import '../../domain/usecases/recordings/check_recording_permission.dart';
+import '../../domain/usecases/recordings/request_recording_permission.dart';
 
 /// Provider for managing recording state
 class RecordingProvider extends ChangeNotifier {
@@ -13,6 +14,7 @@ class RecordingProvider extends ChangeNotifier {
   final PauseRecording _pauseRecording;
   final ResumeRecording _resumeRecording;
   final CheckRecordingPermission _checkPermission;
+  final RequestRecordingPermission _requestPermission;
 
   bool _isRecording = false;
   bool _isPaused = false;
@@ -27,11 +29,13 @@ class RecordingProvider extends ChangeNotifier {
     required PauseRecording pauseRecording,
     required ResumeRecording resumeRecording,
     required CheckRecordingPermission checkPermission,
+    required RequestRecordingPermission requestPermission,
   })  : _startRecording = startRecording,
         _stopRecording = stopRecording,
         _pauseRecording = pauseRecording,
         _resumeRecording = resumeRecording,
-        _checkPermission = checkPermission;
+        _checkPermission = checkPermission,
+        _requestPermission = requestPermission;
 
   bool get isRecording => _isRecording;
   bool get isPaused => _isPaused;
@@ -64,7 +68,24 @@ class RecordingProvider extends ChangeNotifier {
 
   /// Request permission
   Future<void> requestPermission() async {
-    await checkPermission();
+    _isCheckingPermission = true;
+    _error = null;
+    notifyListeners();
+
+    final result = await _requestPermission();
+    result.fold(
+      onSuccess: (hasPermission) {
+        _hasPermission = hasPermission;
+        _isCheckingPermission = false;
+        notifyListeners();
+      },
+      onError: (failure) {
+        _error = failure.message;
+        _hasPermission = false;
+        _isCheckingPermission = false;
+        notifyListeners();
+      },
+    );
   }
 
   /// Start recording

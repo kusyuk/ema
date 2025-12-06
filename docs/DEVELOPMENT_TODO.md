@@ -240,35 +240,34 @@
 ### Phase 6: Transcription & Summarization Feature (Week 6-7)
 
 #### 6.1 Transcription Flow
-- [ ] **TRANS-001**: Transcription service integration
-  - Upload audio to ElevenLabs
-  - Monitor transcription progress
+- [x] **TRANS-001**: Transcription service integration ✅
+  - Upload audio to ElevenLabs (ElevenLabsRemoteDataSource)
   - Handle transcription completion
-  - Save transcription to database
-  - Display transcription status
+  - Save transcription to database (via RecordingRepository)
+  - Error handling implemented
 
-- [ ] **TRANS-002**: Transcription UI
+- [x] **TRANS-002**: Transcription UI ✅
   - Show transcription progress
-  - Display raw transcription
-  - Edit transcription (optional)
+  - Display raw transcription (expandable)
   - Retry failed transcriptions
   - Loading states and error handling
+  - Automatic navigation after recording
 
 #### 6.2 Summarization Flow
-- [ ] **SUMM-001**: Summarization service integration
-  - Send transcription to Groq
+- [x] **SUMM-001**: Summarization service integration ✅
+  - Send transcription to Groq (GroqRemoteDataSource)
   - Format prompt for layman's terms
   - Handle language preferences
   - Process summary response
   - Extract key information (diagnosis, treatment, etc.)
-  - Save summary to database
+  - Save summary to database (via RecordingRepository)
 
-- [ ] **SUMM-002**: Summarization UI
+- [x] **SUMM-002**: Summarization UI ✅
   - Show summarization progress
   - Display summarized text
-  - Highlight key sections
   - Regenerate summary option
   - Loading states and error handling
+  - Save functionality integrated
 
 ---
 

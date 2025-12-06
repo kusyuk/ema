@@ -24,7 +24,13 @@ class RecordingLocalDataSourceImpl implements RecordingLocalDataSource {
     try {
       final recordingsJson = _box.get('recordings', defaultValue: <JsonMap>[]) as List<dynamic>;
       return recordingsJson
-          .map((json) => RecordingModel.fromJson(json as JsonMap))
+          .map((json) {
+            // Convert Hive's _Map<dynamic, dynamic> to Map<String, dynamic>
+            if (json is Map) {
+              return RecordingModel.fromJson(Map<String, dynamic>.from(json));
+            }
+            throw const CacheException('Invalid recording data format');
+          })
           .toList();
     } catch (e) {
       throw CacheException('Failed to get recordings: ${e.toString()}');

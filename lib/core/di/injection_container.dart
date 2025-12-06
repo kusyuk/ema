@@ -5,6 +5,7 @@ import '../constants/app_constants.dart';
 import '../constants/env_constants.dart';
 import '../network/api_client.dart';
 import '../utils/file_storage.dart';
+import '../utils/logger.dart';
 import '../services/audio_recorder_service.dart';
 import '../services/audio_player_service.dart';
 import '../../data/datasources/appointment_local_data_source.dart';
@@ -35,20 +36,31 @@ import '../../domain/usecases/recordings/stop_recording.dart';
 import '../../domain/usecases/recordings/pause_recording.dart';
 import '../../domain/usecases/recordings/resume_recording.dart';
 import '../../domain/usecases/recordings/check_recording_permission.dart';
+import '../../domain/usecases/recordings/request_recording_permission.dart';
+import '../../domain/usecases/recordings/save_transcription_and_summary.dart';
 
 /// Service locator instance
 final sl = GetIt.instance;
 
 /// Initialize dependency injection container
 Future<void> init() async {
-  // Initialize Hive
-  await Hive.initFlutter();
-  
-  // Load environment variables
-  await EnvConstants.load();
-  
-  // Initialize file storage
-  await FileStorage.initialize();
+  try {
+    Logger.info('Starting dependency injection initialization...');
+    
+    // Initialize Hive
+    Logger.info('Initializing Hive...');
+    await Hive.initFlutter();
+    Logger.info('Hive initialized successfully');
+    
+    // Load environment variables
+    Logger.info('Loading environment variables...');
+    await EnvConstants.load();
+    Logger.info('Environment variables loaded');
+    
+    // Initialize file storage
+    Logger.info('Initializing file storage...');
+    await FileStorage.initialize();
+    Logger.info('File storage initialized');
   
   // Register core services
   
@@ -186,5 +198,24 @@ Future<void> init() async {
   sl.registerLazySingleton<CheckRecordingPermission>(
     () => CheckRecordingPermission(sl<AudioRecorderService>()),
   );
+  
+  sl.registerLazySingleton<RequestRecordingPermission>(
+    () => RequestRecordingPermission(sl<AudioRecorderService>()),
+  );
+  
+  sl.registerLazySingleton<SaveTranscriptionAndSummary>(
+    () => SaveTranscriptionAndSummary(sl<RecordingRepository>()),
+  );
+    
+    Logger.info('Dependency injection initialization completed successfully');
+  } catch (e, stackTrace) {
+    Logger.error(
+      'Failed to initialize dependency injection',
+      error: e,
+      stackTrace: stackTrace,
+    );
+    rethrow;
+  }
 }
+
 

@@ -10,6 +10,9 @@ import '../../domain/usecases/recordings/stop_recording.dart';
 import '../../domain/usecases/recordings/pause_recording.dart';
 import '../../domain/usecases/recordings/resume_recording.dart';
 import '../../domain/usecases/recordings/check_recording_permission.dart';
+import '../../domain/usecases/recordings/request_recording_permission.dart';
+import '../../domain/usecases/recordings/create_recording.dart';
+import '../pages/transcription_page.dart';
 import '../providers/recording_provider.dart';
 
 /// Recording page for capturing audio
@@ -27,15 +30,7 @@ class RecordingPage extends StatefulWidget {
 
 class _RecordingPageState extends State<RecordingPage> {
   StreamSubscription<Duration>? _durationSubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkPermission();
-      _setupDurationListener();
-    });
-  }
+  bool _hasInitialized = false;
 
   @override
   void dispose() {
@@ -43,16 +38,11 @@ class _RecordingPageState extends State<RecordingPage> {
     super.dispose();
   }
 
-  Future<void> _checkPermission() async {
-    final provider = context.read<RecordingProvider>();
-    await provider.checkPermission();
-  }
-
-  void _setupDurationListener() {
+  void _setupDurationListener(RecordingProvider provider) {
     final recorderService = di.sl<AudioRecorderService>();
+    _durationSubscription?.cancel();
     _durationSubscription = recorderService.durationStream.listen((duration) {
       if (mounted) {
-        final provider = context.read<RecordingProvider>();
         provider.updateDuration(duration);
       }
     });
@@ -67,6 +57,7 @@ class _RecordingPageState extends State<RecordingPage> {
         pauseRecording: di.sl<PauseRecording>(),
         resumeRecording: di.sl<ResumeRecording>(),
         checkPermission: di.sl<CheckRecordingPermission>(),
+        requestPermission: di.sl<RequestRecordingPermission>(),
       ),
       child: Scaffold(
         appBar: AppBar(
@@ -79,6 +70,15 @@ class _RecordingPageState extends State<RecordingPage> {
         body: SafeArea(
           child: Consumer<RecordingProvider>(
             builder: (context, provider, child) {
+              // Initialize on first build
+              if (!_hasInitialized) {
+                _hasInitialized = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  provider.checkPermission();
+                  _setupDurationListener(provider);
+                });
+              }
+
               if (provider.isCheckingPermission) {
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -299,9 +299,46 @@ class _RecordingPageState extends State<RecordingPage> {
     
     if (mounted) {
       result.fold(
-        onSuccess: (filePath) {
+        onSuccess: (filePath) async {
           if (filePath != null) {
-            Navigator.of(context).pop(filePath);
+            // Get recording duration
+            final recorderService = di.sl<AudioRecorderService>();
+            final duration = recorderService.currentDuration;
+            
+            // Create recording entry
+            final createRecording = di.sl<CreateRecording>();
+            final fileName = filePath.split('/').last;
+            
+            final createResult = await createRecording(
+              CreateRecordingParams(
+                appointmentId: widget.appointmentId ?? '',
+                audioFilePath: fileName,
+                duration: duration,
+              ),
+            );
+            
+            createResult.fold(
+              onSuccess: (recording) {
+                // Navigate to transcription page
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => TranscriptionPage(
+                      audioFilePath: filePath,
+                      appointmentId: widget.appointmentId,
+                      recordingId: recording.id,
+                    ),
+                  ),
+                );
+              },
+              onError: (failure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Failed to save recording: ${failure.message}'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              },
+            );
           }
         },
         onError: (failure) {

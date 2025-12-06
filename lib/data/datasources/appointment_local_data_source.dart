@@ -28,7 +28,13 @@ class AppointmentLocalDataSourceImpl implements AppointmentLocalDataSource {
     try {
       final appointmentsJson = _box.get('appointments', defaultValue: <JsonMap>[]) as List<dynamic>;
       return appointmentsJson
-          .map((json) => AppointmentModel.fromJson(json as JsonMap))
+          .map((json) {
+            // Convert Hive's _Map<dynamic, dynamic> to Map<String, dynamic>
+            if (json is Map) {
+              return AppointmentModel.fromJson(Map<String, dynamic>.from(json));
+            }
+            throw const CacheException('Invalid appointment data format');
+          })
           .toList();
     } catch (e) {
       throw const CacheException('Failed to get appointments');

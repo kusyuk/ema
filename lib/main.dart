@@ -2,20 +2,55 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'core/di/injection_container.dart' as di;
 import 'core/constants/app_constants.dart';
+import 'presentation/pages/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize dependency injection
-  await di.init();
-  
-  // Set preferred orientations
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-  
-  runApp(const MainApp());
+  try {
+    // Initialize dependency injection
+    await di.init();
+    
+    // Set preferred orientations
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    
+    runApp(const MainApp());
+  } catch (e, stackTrace) {
+    // Log error and show error screen
+    debugPrint('Error during initialization: $e');
+    debugPrint('Stack trace: $stackTrace');
+    runApp(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                const SizedBox(height: 16),
+                const Text(
+                  'Initialization Error',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Error: $e',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class MainApp extends StatelessWidget {
@@ -38,14 +73,7 @@ class MainApp extends StatelessWidget {
           bodySmall: TextStyle(fontSize: AppConstants.defaultFontSize),
         ),
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'EMA - Elderly Medical Appointment',
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      ),
+      home: const HomePage(),
     );
   }
 }

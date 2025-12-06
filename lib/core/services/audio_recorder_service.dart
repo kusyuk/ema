@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:record/record.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../constants/app_constants.dart';
 import '../errors/exceptions.dart';
 import '../utils/file_storage.dart';
@@ -37,12 +38,29 @@ class AudioRecorderService {
   /// Request recording permission
   Future<bool> requestPermission() async {
     try {
+      // First check if already granted
       if (await hasPermission()) {
         return true;
       }
-      return await _recorder.hasPermission();
+      
+      // Request permission using permission_handler
+      final status = await Permission.microphone.request();
+      
+      if (status.isGranted) {
+        Logger.info('Microphone permission granted');
+        return true;
+      } else if (status.isPermanentlyDenied) {
+        Logger.warning('Microphone permission permanently denied');
+        throw const PermissionException(
+          'Microphone permission is permanently denied. Please enable it in app settings.',
+        );
+      } else {
+        Logger.warning('Microphone permission denied');
+        return false;
+      }
     } catch (e) {
       Logger.error('Failed to request recording permission', error: e);
+      if (e is PermissionException) rethrow;
       throw PermissionException('Failed to request microphone permission: ${e.toString()}');
     }
   }
