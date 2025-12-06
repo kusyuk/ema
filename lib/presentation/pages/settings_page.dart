@@ -74,9 +74,9 @@ class _SettingsPageState extends State<SettingsPage> {
     if (!mounted) return;
     result.fold(
       onSuccess: (_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Settings saved')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Settings saved')));
       },
       onError: (failure) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -110,8 +110,8 @@ class _SettingsPageState extends State<SettingsPage> {
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? _buildError()
-                : _buildContent(),
+            ? _buildError()
+            : _buildContent(),
       ),
     );
   }
@@ -125,10 +125,7 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 12),
           Text(_error ?? 'Error'),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _load,
-            child: const Text('Retry'),
-          ),
+          ElevatedButton(onPressed: _load, child: const Text('Retry')),
         ],
       ),
     );
@@ -138,30 +135,35 @@ class _SettingsPageState extends State<SettingsPage> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        const _Section(
+        _Section(
           title: 'General',
-          children: [],
-        ),
-        _SettingTile(
-          icon: Icons.brightness_6_outlined,
-          title: 'Theme',
-          subtitle: 'Light / Dark / System',
-          trailing: DropdownButton<String>(
-            value: _themeMode,
-            items: const [
-              DropdownMenuItem(value: 'system', child: Text('System')),
-              DropdownMenuItem(value: 'light', child: Text('Light')),
-              DropdownMenuItem(value: 'dark', child: Text('Dark')),
-            ],
-            onChanged: (v) {
-              if (v == null) return;
-              setState(() => _themeMode = v);
-              _box.put('theme_mode', v);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Theme set to ${v[0].toUpperCase()}${v.substring(1)}')),
-              );
-            },
-          ),
+          children: [
+            _SettingTile(
+              icon: Icons.brightness_6_outlined,
+              title: 'Theme',
+              subtitle: 'Light / Dark / System',
+              trailing: DropdownButton<String>(
+                value: _themeMode,
+                items: const [
+                  DropdownMenuItem(value: 'system', child: Text('System')),
+                  DropdownMenuItem(value: 'light', child: Text('Light')),
+                  DropdownMenuItem(value: 'dark', child: Text('Dark')),
+                ],
+                onChanged: (v) {
+                  if (v == null) return;
+                  setState(() => _themeMode = v);
+                  _box.put('theme_mode', v);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Theme set to ${v[0].toUpperCase()}${v.substring(1)}',
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 12),
         const _Section(
@@ -280,10 +282,7 @@ class _Section extends StatelessWidget {
   final String title;
   final List<Widget> children;
 
-  const _Section({
-    required this.title,
-    required this.children,
-  });
+  const _Section({required this.title, required this.children});
 
   @override
   Widget build(BuildContext context) {
@@ -327,20 +326,14 @@ class _SettingTile extends StatelessWidget {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(icon),
-      title: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
       subtitle: Text(subtitle),
-      trailing: trailing ??
+      trailing:
+          trailing ??
           const Padding(
             padding: EdgeInsets.only(right: 8.0),
-            child: Text(
-              'Info',
-              style: TextStyle(color: Colors.grey),
-            ),
+            child: Text('Info', style: TextStyle(color: Colors.grey)),
           ),
     );
   }
 }
-

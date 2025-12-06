@@ -16,7 +16,8 @@ class RootPage extends StatefulWidget {
 class _RootPageState extends State<RootPage> {
   int _index = 0;
 
-  final GlobalKey<CalendarHomePageState> _calendarKey = GlobalKey<CalendarHomePageState>();
+  final GlobalKey<CalendarHomePageState> _calendarKey =
+      GlobalKey<CalendarHomePageState>();
 
   late final List<Widget> _pages = [
     CalendarHomePage(key: _calendarKey),
@@ -27,12 +28,7 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _index,
-        children: _pages,
-      ),
-      floatingActionButton: _calendarFab(context),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
+      body: IndexedStack(index: _index, children: _pages),
       bottomNavigationBar: StylishBottomBar(
         option: BubbleBarOptions(
           barStyle: BubbleBarStyle.horizontal,
@@ -65,29 +61,8 @@ class _RootPageState extends State<RootPage> {
           ),
         ],
         onTap: (i) => setState(() => _index = i),
-        fabLocation: StylishBarFabLocation.end,
         hasNotch: false,
       ),
     );
   }
-
-  Widget _calendarFab(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () async {
-        final state = _calendarKey.currentState;
-        if (state != null) {
-          await state.createAppointment();
-        } else {
-          setState(() => _index = 0);
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
-            if (_calendarKey.currentState != null) {
-              await _calendarKey.currentState!.createAppointment();
-            }
-          });
-        }
-      },
-      child: const Icon(Icons.add),
-    );
-  }
 }
-

@@ -42,7 +42,8 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
     _remarksCtrl = TextEditingController(text: appt?.remarks ?? '');
     _locationCtrl = TextEditingController(text: appt?.location ?? '');
     _reminderEnabled = appt?.reminderEnabled ?? true;
-    _reminderMinutes = appt?.reminderMinutes ?? AppConstants.defaultReminderMinutes;
+    _reminderMinutes =
+        appt?.reminderMinutes ?? AppConstants.defaultReminderMinutes;
   }
 
   @override
@@ -63,9 +64,7 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
       lastDate: DateTime(2100),
       builder: (ctx, child) {
         return MediaQuery(
-          data: MediaQuery.of(ctx).copyWith(
-            textScaler: TextScaler.noScaling,
-          ),
+          data: MediaQuery.of(ctx).copyWith(textScaler: TextScaler.noScaling),
           child: child ?? const SizedBox.shrink(),
         );
       },
@@ -78,9 +77,7 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
       initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
       builder: (ctx, child) {
         return MediaQuery(
-          data: MediaQuery.of(ctx).copyWith(
-            textScaler: TextScaler.noScaling,
-          ),
+          data: MediaQuery.of(ctx).copyWith(textScaler: TextScaler.noScaling),
           child: child ?? const SizedBox.shrink(),
         );
       },
@@ -109,9 +106,15 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
 
     final hospitalName = _hospitalCtrl.text.trim();
     final doctorName = _doctorCtrl.text.trim();
-    final speciality = _specialityCtrl.text.trim().isEmpty ? null : _specialityCtrl.text.trim();
-    final remarks = _remarksCtrl.text.trim().isEmpty ? null : _remarksCtrl.text.trim();
-    final location = _locationCtrl.text.trim().isEmpty ? null : _locationCtrl.text.trim();
+    final speciality = _specialityCtrl.text.trim().isEmpty
+        ? null
+        : _specialityCtrl.text.trim();
+    final remarks = _remarksCtrl.text.trim().isEmpty
+        ? null
+        : _remarksCtrl.text.trim();
+    final location = _locationCtrl.text.trim().isEmpty
+        ? null
+        : _locationCtrl.text.trim();
 
     if (_isEdit) {
       final update = di.sl<UpdateAppointment>();
@@ -240,10 +243,9 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
                 TextFormField(
                   controller: _doctorCtrl,
                   decoration: const InputDecoration(
-                    labelText: 'Doctor Name',
+                    labelText: 'Doctor Name (optional)',
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Doctor name is required' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -252,7 +254,9 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
                     labelText: 'Hospital/Clinic',
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Hospital/Clinic is required' : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? 'Hospital/Clinic is required'
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -324,7 +328,9 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
                         : const Icon(Icons.save),
                     label: Text(
                       _submitting ? 'Saving...' : 'Save',
-                      style: const TextStyle(fontSize: AppConstants.defaultFontSize),
+                      style: const TextStyle(
+                        fontSize: AppConstants.defaultFontSize,
+                      ),
                     ),
                   ),
                 ),
@@ -349,4 +355,3 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
     return '$minutes min before';
   }
 }
-

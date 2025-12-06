@@ -296,6 +296,23 @@ class CalendarHomePageState extends State<CalendarHomePage> {
           ),
           const SizedBox(height: 16),
           _buildSelectedDayCard(selectedEvents, startableAppt),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.accent,
+                foregroundColor: AppTheme.primaryLight,
+                shape: const StadiumBorder(),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              onPressed: () => createAppointment(),
+              child: const Text(
+                'Add New Appointment',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ),
         ],
       ),
     );
