@@ -454,6 +454,12 @@
   - Success/error messages
   - Haptic feedback (where appropriate)
 
+#### 11.2 Recent UI/UX Updates
+- [x] **UI-HOME-004**: Replace FAB with inline “Add New Appointment” pill button beneath today’s appointments
+- [x] **UI-SET-002**: Move Theme selector into the General card on Settings
+- [x] **UI-FORM-003**: Make Doctor Name optional on appointment form (faster entry)
+- [x] **NAV-REFRESH-001**: Add RefreshService bus to sync Home/History after appointment CRUD
+
 #### 11.2 Navigation & Layout
 - [x] **UI-NAV-001**: Main navigation
   - Bottom navigation bar (3 items) with StylishBottomBar

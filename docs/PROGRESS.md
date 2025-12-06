@@ -9,7 +9,7 @@
 
 **Status**: Development In Progress  
 **Current Phase**: Phase 11 - UI/UX & Accessibility (In Progress)  
-**Completion**: ~78% of MVP features  
+**Completion**: ~80% of MVP features  
 **App Status**: ✅ Running Successfully (Initialization issues resolved)
 
 ---
@@ -198,6 +198,10 @@
 - ✅ Summary display with expandable transcription
 - ✅ Error handling UI with retry options
 - ✅ Appointments list page with pull-to-refresh
+- ✅ Calendar-first Home with inline “Add New Appointment” CTA (FAB removed for clarity)
+- ✅ Settings: theme selector placed inside General card; TTS defaults persisted
+- ✅ Appointment form: Doctor Name now optional for faster entry
+- ✅ Global refresh bus keeps Home/History in sync after CRUD
 
 ### Code Quality
 - ✅ Zero compilation errors
@@ -214,6 +218,7 @@
 2. Touch targets: enforce 44x44 min for primary actions (record, play/stop, share, save)  
 3. Contrast & text scaling: validate tokens against large text / high-contrast modes  
 4. Onboarding/help polish using `introduction_screen` (optional)  
+5. Confirm inline “Add New Appointment” CTA discoverability (no FAB) and refresh sync after CRUD (RefreshService)
 
 ### Phase 9/10 polish (deferred until after A11Y)
 - Share modal options (summary-only vs. summary+transcript, optional audio)
